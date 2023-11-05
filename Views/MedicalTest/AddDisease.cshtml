@@ -1,0 +1,55 @@
+﻿@model List<DiseaseModel>
+<h2>Add Disease</h2>
+
+@using (Html.BeginForm("SubmitDiseaseName", "MedicalTest", FormMethod.Post, new { id = "diseaseNameForm" }))
+{
+
+    <div class="form-group">
+        <label for="diseaseName">Enter Disease Name:</label>
+        <input type="text" id="diseaseName" autocomplete="off" name="diseaseName" class="form-control" required />
+        <button type="submit" class="btn btn-primary">Save</button>
+    </div>
+    <div class="position-fixed bottom-0 end-0 p-3" id="toastContainer">
+        <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="5000">
+            <div class="toast-header">
+                <strong class="me-auto">Success</strong>
+                <small>Just now</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Records saved successfully.
+            </div>
+        </div>
+    </div>
+}
+<br />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $("#diseaseNameForm").submit(function (e) {
+        e.preventDefault(); // Prevent the default form submission
+
+        // Your code to handle the disease name form
+        // Use the form ID to differentiate between the forms
+        var formData = {
+            diseaseName: $("#diseaseName").val(),
+        };
+        // Send the data to the controller action using AJAX
+        $.ajax({
+            url: "/MedicalTest/SubmitDiseaseName", // Modify the URL as needed
+            type: "POST",
+            data: JSON.stringify(formData), // Convert to JSON
+            contentType: "application/json",
+            success: function (result) {
+                // Handle success, e.g., display a success message
+                var successToast = new bootstrap.Toast(document.getElementById('successToast'));
+                successToast.show();
+            },
+            error: function (error) {
+                // Handle errors, e.g., display an error message
+                $("#ajaxResult").html("An error occurred while saving data.");
+            }
+        });
+    });
+
+</script>

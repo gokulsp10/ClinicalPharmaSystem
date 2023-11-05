@@ -1,0 +1,265 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ClinicalPharmaSystem</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ClinicalPharmaSystem.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" /> <!-- Include Font Awesome CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="~/css/toast.css">
+    <style>
+        /* Add custom CSS for the sidebar and collapsible functionality */
+        #sidebar {
+            position: fixed;
+            left: 0;
+            height: 100%;
+            width: 250px;
+            padding-bottom:65px;
+            z-index: 1;
+            transition: all 0.3s;
+            background-color: #f8f9fa; /* Adjust the background color as needed */
+            overflow-y: auto; /* Allow sidebar to scroll if content exceeds height */
+            max-height: calc(100vh - 60px); /* Adjust as needed, considering the height of your header/navbar */
+        }
+
+            #sidebar.active {
+                width: 80px;
+            }
+
+                #sidebar.active .nav-link-text {
+                    display: none;
+                }
+
+        /* Adjust the following styles for your sidebar content */
+        .sidebar-content {
+            padding: 15px;
+        }
+
+        /* Ensure the content after the sidebar starts after the sidebar's width */
+        .main-content {
+            margin-left: 250px; /* Should match the sidebar's width */
+        }
+
+        /* Style for the logo */
+        .sidebar-logo {
+            padding: 15px;
+        }
+
+        .nav-link-text {
+            display: inline;
+        }
+
+        .nav-item .nav-item {
+            display: none;
+        }
+
+        .nav-item.active .nav-item {
+            display: block;
+        }
+
+        .nav-item.active a.nav-link {
+            background-color: darkcyan; /* Highlight color */
+            color: #fff; /* Text color */
+        }
+
+        /* Highlight color for secondary menu items */
+        .secondary-item.active .nav-link {
+            background-color: white !important; /* Change this to your desired text color */
+            color: black !important;
+        }
+    </style>
+</head>
+<body>
+    <header style="background-color: #f8f9fa;">
+        <!-- Common header with logo and quick links -->
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Logo in the top left corner -->
+                <div class="col-md-2">
+                    <div class="header-logo">
+                        <img src="/Images/nalamLogo.png" alt="Logo" width="90" height="90" />
+                    </div>
+                </div>
+                <!-- Quick links for Profile, Login, and Logout -->
+                <div style="text-align:right" class="col-md-10">
+                    <div class="header-quick-links">
+                        <!-- Font Awesome icons for quick links -->
+                        <a href="/Home/Profile" class="header-link"><i class="fas fa-user"></i> Profile</a>
+                        <a href="/Home/Registration" class="header-link"><i class="fas fa-user-plus"></i> Register</a>
+                        <a href="/Home/Login" class="header-link"><i class="fas fa-sign-out-alt"></i> Login/Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+                <div class="position-sticky sidebar-content">
+                  @*   <!-- Logo -->
+                    <div class="sidebar-logo">
+                        <img src="/Images/nalamLogo.png" alt="Logo" width="90" height="90" />
+                    </div> *@
+                    <ul class="nav flex-column">
+                        <!-- Primary menu items with Font Awesome icons -->
+                        <li class="nav-item primary-item">
+                            <a class="nav-link" href="#"><i class="fas fa-tachometer-alt"></i> <span class="nav-link-text">Dashboard</span></a>
+                            <ul class="nav flex-column ml-3">
+                                <!-- Secondary menu items -->
+                                <li class="nav-item secondary-item">
+                                    <a class="nav-link" href="/Dashboard/Clinical">Clinical</a>
+                                </li>
+                                <li class="nav-item secondary-item">
+                                    <a class="nav-link" href="/Dashboard/Patient">Patient</a>
+                                </li>
+                            </ul>
+                        </li>                        
+                        <li class="nav-item has-children primary-item">
+                            <a class="nav-link" href="#"><i class="fas fa-disease"></i> <span class="nav-link-text">Disease</span></a>
+                            <ul class="nav flex-column ml-3">
+                                <!-- Secondary menu items -->
+                                <li class="nav-item secondary-item">
+                                    <a class="nav-link" href="/MedicalTest/AddDisease">Add Disease</a>
+                                </li>
+                                <li class="nav-item secondary-item">
+                                    <a class="nav-link" href="/MedicalTest/ViewEditDisease">View/Edit Disease</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item has-children primary-item">
+                            <a class="nav-link" href="#"><i class="fas fa-flask"></i> <span class="nav-link-text">Medical Tests</span></a>
+                            <ul class="nav flex-column ml-3">
+                                <!-- Secondary menu items -->
+                                <li class="nav-item secondary-item">
+                                    <a class="nav-link" href="/MedicalTest/AddMedicalTest">Add Test</a>
+                                </li>
+                                <li class="nav-item secondary-item">
+                                    <a class="nav-link" href="/MedicalTest/ViewMedicalTests">View/Edit Test</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item has-children primary-item">
+                            <a class="nav-link" href="#"><i class="fas fa-user"></i> <span class="nav-link-text">Patient</span></a>
+                            <ul class="nav flex-column ml-3">
+                                <!-- Secondary menu items -->
+                                <li class="nav-item secondary-item">
+                                    <a class="nav-link" href="/Patient/NewPatient">New Patient</a>
+                                </li>
+                                <li class="nav-item secondary-item">
+                                    <a class="nav-link" href="/Patient/AddRecords">Add Records</a>
+                                </li>
+                                <li class="nav-item secondary-item">
+                                    <a class="nav-link" href="/Patient/ViewPatient">View Patient</a>
+                                </li>
+                                <li class="nav-item secondary-item">
+                                    <a class="nav-link" href="#">Edit Patient</a>
+                                </li>
+                                <li class="nav-item secondary-item">
+                                    <a class="nav-link" href="/Patient/AddRecords">Clinical Notes</a>
+                                </li>
+                                <li class="nav-item secondary-item">
+                                    <a class="nav-link" href="/Patient/ViewPatient">Medical History</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item primary-item">
+                            <a class="nav-link" href="/Appointment/AddAppointment"><i class="fas fa-calendar"></i> <span class="nav-link-text">Appointments</span></a>
+                        </li>
+                        <li class="nav-item has-children primary-item">
+                            <a class="nav-link" href="#"><i class="fas fa-medkit"></i> <span class="nav-link-text">Pharmacy</span></a>
+                            <ul class="nav flex-column ml-3">
+                                <!-- Secondary menu items -->
+                                <li class="nav-item secondary-item">
+                                    <a class="nav-link" href="#">Add</a>
+                                </li>
+                                <li class="nav-item secondary-item">
+                                    <a class="nav-link" href="#">View</a>
+                                </li>
+                                <li class="nav-item secondary-item">
+                                    <a class="nav-link" href="#">Edit</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item primary-item">
+                            <a class="nav-link" href="#"><i class="fas fa-money-bill"></i> <span class="nav-link-text">Revenue</span></a>
+                        </li>
+                        <!-- Add more primary and secondary menu items as needed -->
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Page content -->
+            <main style="margin-top: 90px;" class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+                <div class="container-fluid">
+                @RenderBody()
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <footer style="text-align: center;" class="border-top align-content-center footer text-muted">
+        <div class="container">
+            &copy; 2023 - ClinicalPharmaSystem - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @* <script src="~/js/timepicker.js" asp-append-version="true"></script> *@
+    <script>
+        // Add JavaScript to toggle the sidebar
+        $("#sidebarCollapse").on("click", function () {
+            $("#sidebar").toggleClass("active");
+        });
+
+        // Add JavaScript to toggle secondary menus
+        $(".has-children > a").on("click", function (e) {
+            e.preventDefault();
+            $(this).parent().toggleClass("active");
+
+            // Remove highlighting from other secondary items
+            $(this).parent().siblings(".has-children").removeClass("active");
+
+            // Highlight the parent primary menu item
+            $(this).closest(".primary-item").addClass("active");
+
+            // Remove highlighting from other primary items
+            $(this).closest(".primary-item").siblings(".primary-item").removeClass("active");
+        });
+
+        // Add JavaScript to handle highlighting of primary menu items
+        $(".primary-item > a.nav-link").on("click", function () {
+            // Remove highlighting from other primary items
+            $(".primary-item").removeClass("active");
+            $(this).closest(".primary-item").addClass("active");
+
+            // Remove highlighting from secondary items
+            $(".secondary-item").removeClass("active");
+        });
+
+        // Add JavaScript to handle highlighting of secondary menu items
+        $(".secondary-item > a.nav-link").on("click", function () {
+            // Remove highlighting from other secondary items
+            $(".secondary-item").removeClass("active");
+            $(this).closest(".secondary-item").addClass("active");
+
+            // Highlight the parent primary menu item
+            $(this).closest(".primary-item").addClass("active");
+
+            // Remove highlighting from other primary items
+            $(this).closest(".primary-item").siblings(".primary-item").removeClass("active");
+        });
+    </script>
+
+
+
+    @await RenderSectionAsync("Scripts", required: false)
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
+</body>
+</html>

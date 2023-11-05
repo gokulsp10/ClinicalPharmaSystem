@@ -1,0 +1,150 @@
+﻿@model List<DiseaseModel>
+<h2>View Edit Diseases</h2>
+
+@using (Html.BeginForm("ViewEditDisease", "MedicalTest", FormMethod.Post, new { id = "diseaseNameForm" }))
+{
+    <div class="row">
+        <label for="diseaseName">Enter Disease Name:</label>
+        <div class="form-group col-md-5"> <input type="text" required autocomplete="off" id="select" class="form-control" /> </div>
+        <div class="form-group col-md-5"> <input style="display:none" type="text" id="update" disabled class="form-control" /> </div>
+    </div>
+    <br />
+    <h3>Disease Edit Form</h3>
+
+    <div class="row">
+        <label for="diseaseName">Selected Disease Name:</label>
+        <div class="form-group col-md-5"> <input type="text" autocomplete="off" readonly id="selectedDiseaseName" class="form-control" /> </div>
+        <div class="form-group col-md-5"> <input style="display:none" type="text" id="selectedDiseaseId" disabled class="form-control" /> </div>
+    </div>
+
+    <div class="row">
+        <label for="diseaseName">Edit Disease Name:</label>
+        <div class="form-group col-md-5"> <input type="text" autocomplete="off"  id="EditselectedDiseaseName" class="form-control" /> </div>
+    </div>
+
+    <div class="row">        
+        <div class="form-group col-md-5">
+            <input type="checkbox" id="ChkselectedDiseaseName" />  <label for="diseaseName">Delete Disease Name:</label>
+        </div>
+
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Save</button>
+    <div class="position-fixed bottom-0 end-0 p-3" id="toastContainer">
+        <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="5000">
+            <div class="toast-header">
+                <strong class="me-auto">Success</strong>
+                <small>Just now</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Records saved successfully.
+            </div>
+        </div>
+    </div>
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+
+<script>
+    var map = {}; // Declare map globally
+
+    $("#select").typeahead({
+        minLength: 1,
+        source: function (request, response) {
+            $.ajax({
+                url: "/MedicalTest/GetDiseaseNamesForEdit",
+                data: {
+                    "term": request
+                },
+                type: "GET",
+                contentType: "json",
+                success: function (data) {
+                    var items = [];
+
+                    if (Array.isArray(data)) {
+                        // Extract disease names from the objects and create an array of strings
+                        items = data.map(function (item) {
+                            return item.diseaseName;
+                        });
+
+                        map = {}; // Update the map for array responses
+                        data.forEach(function (item) {
+                            var id = item.diseasesId;
+                            var name = item.diseaseName;
+                            console.log(name);
+                            $("#selectedDiseaseName").val(name); 
+                            $("#selectedDiseaseId").val(id);
+                            map[name] = {
+                                id: id,
+                                name: name
+                            };
+                        });
+                    } else if (typeof data === 'object') {
+                        // Handle a single object
+                        items.push(data.diseaseName);
+                        map = {}; // Update the map for single object response
+                        var id = data.diseasesId;
+                        var name = data.diseaseName;
+                        console.log(name);
+                        $("#selectedDiseaseName").val(name);
+                        $("#selectedDiseaseId").val(id);
+                        map[name] = {
+                            id: id,
+                            name: name
+                        };
+                    }
+
+                    response(items);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        },
+        updater: function (item) {
+            if (map[item]) {
+                // Check if the item exists in the map
+                $("#update").val(map[item].id);
+            }
+            return item;
+        }
+    });    
+
+</script>
+
+<script>
+    $(document).ready(function () {
+        // Add a click event handler for the "Update" button
+        $("#diseaseNameForm").submit(function (e) {
+            e.preventDefault(); // Prevent the default form submission
+            var editDiseaseName = $("#EditselectedDiseaseName").val(); 
+            var editDiseaseid = $("#selectedDiseaseId").val();
+            var isDiseaseDeleted = $("#ChkselectedDiseaseName").is(":checked");
+
+            // Prepare data to send to the controller
+            var dataToSend = {
+                editDiseaseName: editDiseaseName,
+                isDiseaseDeleted: isDiseaseDeleted,
+                        editDiseaseid: editDiseaseid
+            };
+
+            // Send an AJAX POST request to your controller action method
+            $.ajax({
+                url: '/MedicalTest/postViewEditDiseases', // Replace with the actual URL
+                type: 'POST',
+                data: dataToSend,
+                success: function (response) {
+                    $('#successToast').toast('show');
+                },
+                error: function (error) {
+                    // Handle any errors that occur during the AJAX request
+                    alert('An error occurred: ' + error.statusText);
+                }
+            });
+        });
+    });
+</script>

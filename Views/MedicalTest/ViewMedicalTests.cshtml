@@ -1,0 +1,358 @@
+﻿@model List<DiseaseListModelEdit>
+
+<h2>View Edit Medical Tests</h2>
+
+  
+    <div class="row">
+        <div class="col-8">
+            <label for="DiseaseName">Enter Disease Name:</label>
+            <div class="form-group col-md-8">
+                <input type="text" autocomplete="off" id="select" name="DiseaseName" class="form-control" />
+            </div>
+            <div class="form-group col-md-5">
+                <input type="text" id="update" style="display:none" name="DiseasesId" class="form-control" />
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <br />
+@using (Html.BeginForm("UpdateDiseaseTestValues", "MedicalTest", FormMethod.Post, new { id = "EditmedicalTestForm" }))
+{
+    <h2>List of all Tests for Disease <span id="diseaseNamePlaceholder"></span></h2>
+     <div class="table-responsive" style="height:250px">
+    <table style="margin-bottom:80px" id="diseaseInfoTable" class="table table-bordered">
+        <thead>
+            <tr>
+                <th>DiseasesTestId</th>
+                <th>DiseasesTestName</th>
+                <th>Ref_NormalStartValue</th>
+                <th>Ref_NormalEndValue</th>
+                <th>Ref_AboveNormalStartValue</th>
+                <th>Ref_AboveNormalEndValue</th>
+                <th>Ref_HighStartValue</th>
+                <th>Ref_HighEndValue</th>
+                <th>Ref_HigherStartValue</th>
+                <th>Ref_HigherEndValue</th>
+                <th>IsActive</th>
+                <th>Gender</th>
+                <th>Edit</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Table rows will be dynamically added here -->
+        </tbody>
+    </table>
+    </div>
+    <br />
+
+    <button type="submit" id="submitButton" class="btn btn-success">Save</button>
+    <br />
+    <br />
+    <br />
+    <br />
+    <div class="position-fixed bottom-0 end-0 p-3" id="toastContainer">
+        <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="5000">
+            <div class="toast-header">
+                <strong class="me-auto">Success</strong>
+                <small>Just now</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Records saved successfully.
+            </div>
+        </div>
+    </div>
+
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+
+<script>
+    var map = {}; // Declare map globally
+
+    $("#select").typeahead({
+        minLength: 1,
+        source: function (request, response) {
+            $.ajax({
+                url: "/MedicalTest/GetDiseaseNames",
+                data: {
+                    "term": request
+                },
+                type: "GET",
+                contentType: "json",
+                success: function (data) {
+                    var items = [];
+
+                    if (Array.isArray(data)) {
+                        // Extract disease names from the objects and create an array of strings
+                        items = data.map(function (item) {
+                            return item.diseaseName;
+                        });
+
+                        map = {}; // Update the map for array responses
+                        data.forEach(function (item) {
+                            var id = item.diseasesId;
+                            var name = item.diseaseName;
+                            map[name] = {
+                                id: id,
+                                name: name
+                            };
+                        });
+                    } else if (typeof data === 'object') {
+                        // Handle a single object
+                        items.push(data.diseaseName);
+                        map = {}; // Update the map for single object response
+                        var id = data.diseasesId;
+                        var name = data.diseaseName;
+                        map[name] = {
+                            id: id,
+                            name: name
+                        };
+                    }
+
+                    response(items);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        },
+        updater: function (item) {
+            if (map[item]) {
+                // Check if the item exists in the map
+                $("#update").val(map[item].id);
+            }
+            return item;
+        }
+    });
+
+</script>
+
+<script>
+    $('#select').on('blur', function () {
+        var diseaseNameId = $("#update").val();
+        var diseaseName = $("#select").val();
+
+        $("#diseaseNamePlaceholder").text(diseaseName);
+        // Make an AJAX request to the controller action
+        $.ajax({
+            url: "/MedicalTest/GetDiseaseTestsEdit",
+            method: "GET",
+            data: { diseaseNameId: diseaseNameId },
+            success: function (data) {
+                if (data) {
+                    // Clear the table body
+                    $("#diseaseInfoTable tbody").empty();
+
+                    $.each(data, function (index, disease) {
+                        var newRow = $("<tr>");
+
+                        // Add each column as a cell in the row
+                        newRow.append($("<td>").append(
+                            $("<input>").attr("type", "text").val(disease.diseasesTestId).prop("readonly", true)
+                        ));
+                        newRow.append($("<td>").append(
+                            $("<input>").attr("type", "text").val(disease.diseasesTestName).prop("readonly", true)
+                        ));
+                        newRow.append($("<td>").append(
+                            $("<input>").attr("type", "text").val(disease.ref_NormalStartValue).prop("readonly", true)
+                        ));
+                        newRow.append($("<td>").append(
+                            $("<input>").attr("type", "text").val(disease.ref_NormalEndValue).prop("readonly", true)
+                        ));
+                        newRow.append($("<td>").append(
+                            $("<input>").attr("type", "text").val(disease.ref_AboveNormalStartValue).prop("readonly", true)
+                        ));
+                        newRow.append($("<td>").append(
+                            $("<input>").attr("type", "text").val(disease.ref_AboveNormalEndValue).prop("readonly", true)
+                        ));
+                        newRow.append($("<td>").append(
+                            $("<input>").attr("type", "text").val(disease.ref_HighStartValue).prop("readonly", true)
+                        ));
+                        newRow.append($("<td>").append(
+                            $("<input>").attr("type", "text").val(disease.ref_HighEndValue).prop("readonly", true)
+                        ));
+                        newRow.append($("<td>").append(
+                            $("<input>").attr("type", "text").val(disease.ref_HigherStartValue).prop("readonly", true)
+                        ));
+                        newRow.append($("<td>").append(
+                            $("<input>").attr("type", "text").val(disease.ref_HigherEndValue).prop("readonly", true)
+                        ));
+                        // Add dropdown for isActive with default options
+                        newRow.append($("<td>").append(
+                            $("<select>").prop("disabled", false).append(
+                                $("<option>").text("True").val("1"),
+                                $("<option>").text("False").val("0")
+                            ).val(disease.isActive ? "1" : "0")
+                        ));
+                        // Add dropdown for gender with default options
+                        newRow.append($("<td>").append(
+                            $("<select>").prop("disabled", false).append(
+                                $("<option>").text("M").val("M"),
+                                $("<option>").text("F").val("F"),
+                                $("<option>").text("N/A").val("N/A")
+                            ).val(disease.gender)
+                        ));
+                        newRow.append($("<td>").append(
+                            $("<button>").attr("type", "button").text("Edit").addClass("btn btn-warning").on("click", function () {
+                                // Enable editing on button click
+                                newRow.find("input").prop("readonly", false);
+                            })
+                        ));
+                        // Add "Save" and "Delete" buttons
+                        newRow.append($("<td>").append(
+                            $("<button>").attr("type", "button").text("Save").addClass("btn btn-primary")
+                        ));
+
+                        // Add the row to the table
+                        $("#diseaseInfoTable tbody").append(newRow);
+                    });
+                }
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                console.log(xhr.responseText);
+            }
+        });
+    });
+
+    // Handle "Save" button clicks
+    // Handle "Save" button clicks
+    $('#diseaseInfoTable').on('click', '.save-button', function () {
+        var row = $(this).closest('tr');
+        var inputFields = row.find('input[type="text"]');
+        var selectFields = row.find('select');
+        var data = [];
+        var rowData = {
+            DiseasesTestId: inputFields.eq(0).val(),
+            DiseasesTestName: inputFields.eq(1).val(),
+            Ref_NormalStartValue: inputFields.eq(2).val(),
+            Ref_NormalEndValue: inputFields.eq(3).val(),
+            Ref_AboveNormalStartValue: inputFields.eq(4).val(),
+            Ref_AboveNormalEndValue: inputFields.eq(5).val(),
+            Ref_HighStartValue: inputFields.eq(6).val(),
+            Ref_HighEndValue: inputFields.eq(7).val(),
+            Ref_HigherStartValue: inputFields.eq(8).val(),
+            Ref_HigherEndValue: inputFields.eq(9).val(),
+            IsActive: selectFields.eq(0).val(),
+            Gender: selectFields.eq(1).val()
+        };
+        data.push(rowData);
+        console.log(123);
+        console.log(data);
+        var diseaseNameId = $("#update").val();
+        // Make an AJAX POST request to send the data to the controller action
+        $.ajax({
+            type: 'POST',
+            url: "/MedicalTest/UpdateDiseaseTestValues",
+            data: {
+                values: data, // Send an array with a single row data
+                diseaseNameId: JSON.stringify(data),
+                diseaseId: diseaseNameId
+            },
+            success: function (data) {
+                // Handle the success response
+                var successToast = new bootstrap.Toast(document.getElementById("successToast"));
+                successToast.show();
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                // Handle the error
+                alert('Error: ' + textStatus);
+            }
+        });
+
+        inputFields.prop('readonly', true); // Disable input fields
+        selectFields.prop('disabled', true); // Disable select fields
+        editButton.show(); // Show "Edit" button
+        saveButton.show(); // Hide "Save" button
+    });
+
+
+</script>
+
+<script>
+    $(document).ready(function () {
+        // Handle "Edit" button clicks
+        $('#diseaseInfoTable').on('click', '.edit-button', function () {
+            var row = $(this).closest('tr');
+            var inputFields = row.find('.editable-input');
+            var selectFields = row.find('.select.editable-input');
+            var editButton = row.find('.edit-button');
+            var saveButton = row.find('.save-button');
+
+            inputFields.prop('disabled', false); // Enable input fields for editing, including dropdowns
+            selectFields.prop('disabled', false);
+            editButton.hide(); // Hide "Edit" button
+            saveButton.show(); // Show "Save" button
+        });
+
+
+        // Handle "Save" button clicks
+        $('#diseaseInfoTable').on('click', '.save-button', function () {
+            var row = $(this).closest('tr');
+            var inputFields = row.find('.editable-input');
+            var editButton = row.find('.edit-button');
+            var saveButton = row.find('.save-button');
+
+            inputFields.prop('disabled', true); // Disable input fields
+            editButton.show(); // Show "Edit" button
+            saveButton.hide(); // Hide "Save" button
+        });
+    });
+
+</script>
+
+<script>
+    $(document).ready(function () {
+        // Handle form submission when the "Save" button is clicked
+        $('#submitButton').click(function () {
+            var data = [];
+            var row = $(this).closest('tr');
+            var inputFields = row.find('input.editable-input');
+            var selectFields = row.find('select.editable-input');
+            var editButton = row.find('.edit-button');
+            var saveButton = row.find('.save-button');
+
+            // Collect the data from the row
+            var rowData = {
+                DiseasesTestId: inputFields.eq(0).val(),
+                DiseasesTestName: inputFields.eq(1).val(),
+                Ref_NormalStartValue: parseFloat(inputFields.eq(2).val()),
+                Ref_NormalEndValue: parseFloat(inputFields.eq(3).val()),
+                Ref_AboveNormalStartValue: parseFloat(inputFields.eq(4).val()),
+                Ref_AboveNormalEndValue: parseFloat(inputFields.eq(5).val()),
+                Ref_HighStartValue: parseFloat(inputFields.eq(6).val()),
+                Ref_HighEndValue: parseFloat(inputFields.eq(7).val()),
+                Ref_HigherStartValue: parseFloat(inputFields.eq(8).val()),
+                Ref_HigherEndValue: parseFloat(inputFields.eq(9).val()),
+                IsActive: selectFields.eq(0).val() === "1",
+                Gender: selectFields.eq(1).val()
+            };
+            data.push(data);
+            console.log(data);
+            var diseaseNameId = $("#update").val();
+            // Make an AJAX POST request to send the data to the controller action
+            $.ajax({
+                type: 'POST',
+                url: "/MedicalTest/UpdateDiseaseTestValues",
+                data: {
+                    values: data,
+                    diseaseNameId: JSON.stringify(data),
+                    diseaseId: diseaseNameId
+                },
+                success: function (data) {
+                    // Handle the success response
+                    var successToast = new bootstrap.Toast(document.getElementById("successToast"));
+                    successToast.show();
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    // Handle the error
+                    alert('Error: ' + textStatus);
+                }
+            });
+        });
+    });
+</script>

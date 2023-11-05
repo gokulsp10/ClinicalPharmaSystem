@@ -1,0 +1,336 @@
+﻿@model List<DiseaseTestModel>
+
+<h2>Add Medical Tests</h2>
+
+@using (Html.BeginForm("SubmitMedicalTest", "Patient", FormMethod.Post, new { id = "medicalTestForm" }))
+{
+    <div class="row">
+        <div class="col-8">
+            <label for="PatientId">Enter Patient Id:</label>
+            <div class="form-group col-md-8">
+                <input type="text" autocomplete="off" id="selectPatientid" name="PatientId" class="form-control" />
+            </div>
+            <div class="form-group col-md-5">
+                <input type="text" id="patientGender" style="display:none" name="Gender" class="form-control" />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-8">
+            <label for="DiseaseName">Enter Disease Name:</label>
+            <div class="form-group col-md-8">
+                <input type="text" autocomplete="off" id="select" name="DiseaseName" class="form-control" />
+            </div>
+            <div class="form-group col-md-5">
+                <input type="text" id="update" style="display:none" name="DiseasesId" class="form-control" />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-8">
+            <label for="DiseasesTestName">Enter Disease Test Name:</label>
+            <div class="form-group col-md-8">
+                <input type="text" autocomplete="off" id="selectDiseaseTest" name="DiseasesTestName" class="form-control" />
+            </div>
+            <div class="form-group col-md-5">
+                <input type="text" id="updateDiseaseTest" style="display:none" name="DiseasesTestId" class="form-control" />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-8">
+            <label for="TestResultValue">Enter Test Result Value:</label>
+            <div class="form-group col-md-8">
+                <input type="text" autocomplete="off" id="selecttestResult" name="DiseaseTestValue" class="form-control" />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-8">
+            <label for="ReportDate">Test Taken Date:</label>
+            <div class="form-group col-md-8">
+                <input type="date" autocomplete="off" id="selecttestResultDate" name="ReportDate" class="form-control" />
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <button type="submit" class="btn btn-success">Save</button><br /><br /> <br />
+
+    <h2>List of all Tests for Disease <span id="diseaseNamePlaceholder"></span></h2>
+    <table style="margin-bottom:80px" id="diseaseInfoTable" class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Disease Test Names</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Table rows will be dynamically added here -->
+        </tbody>
+    </table>
+
+    <div class="position-fixed bottom-0 end-0 p-3" id="toastContainer">
+        <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="5000">
+            <div class="toast-header">
+                <strong class="me-auto">Success</strong>
+                <small>Just now</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Records saved successfully.
+            </div>
+        </div>
+    </div>
+    <div class="position-fixed bottom-0 end-0 p-3" id="toastContainer">
+        <div id="PatientFound" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="5000" style="background-color: green; color: white;">
+            <div class="toast-header">
+                <strong class="me-auto">Information</strong>
+                <small>Just now</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close" style="color: white;"></button>
+            </div>
+            <div class="toast-body">
+                Patient Id exists.
+            </div>
+        </div>
+    </div>
+
+    <div class="position-fixed bottom-0 end-0 p-3" id="toastContainer">
+        <div id="PatientNotFound" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="5000" style="background-color: red; color: white;">
+            <div class="toast-header">
+                <strong class="me-auto">Information</strong>
+                <small>Just now</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close" style="color: white;"></button>
+            </div>
+            <div class="toast-body">
+                Patient Id does not exist.
+            </div>
+        </div>
+    </div>
+
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+
+<script>
+    var map = {}; // Declare map globally
+
+    $("#select").typeahead({
+        minLength: 1,
+        source: function (request, response) {
+            $.ajax({
+                url: "/MedicalTest/GetDiseaseNames",
+                data: {
+                    "term": request
+                },
+                type: "GET",
+                contentType: "json",
+                success: function (data) {
+                    var items = [];
+
+                    if (Array.isArray(data)) {
+                        // Extract disease names from the objects and create an array of strings
+                        items = data.map(function (item) {
+                            return item.diseaseName;
+                        });
+
+                        map = {}; // Update the map for array responses
+                        data.forEach(function (item) {
+                            var id = item.diseasesId;
+                            var name = item.diseaseName;
+                            map[name] = {
+                                id: id,
+                                name: name
+                            };
+                        });
+                    } else if (typeof data === 'object') {
+                        // Handle a single object
+                        items.push(data.diseaseName);
+                        map = {}; // Update the map for single object response
+                        var id = data.diseasesId;
+                        var name = data.diseaseName;
+                        map[name] = {
+                            id: id,
+                            name: name
+                        };
+                    }
+
+                    response(items);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        },
+        updater: function (item) {
+            if (map[item]) {
+                // Check if the item exists in the map
+                $("#update").val(map[item].id);
+            }
+            return item;
+        }
+    });
+
+</script>
+
+<script>
+    var map = {}; // Declare map globally
+    $("#selectDiseaseTest").typeahead({
+        minLength: 1,
+        source: function (request, response) {
+            $.ajax({
+                url: "/MedicalTest/GetDiseaseTestNames",
+                data: {
+                    "term": request,
+                    "diseaseid": $('#update').val(),
+                    "Gender": $('#patientGender').val(),
+                },
+                type: "GET",
+                contentType: "json",
+                success: function (data) {
+                    var items = [];
+
+                    if (Array.isArray(data)) {
+                        // Extract disease names from the objects and create an array of strings
+                        items = data.map(function (item) {
+                            return item.diseasesTestName;
+                        });
+
+                        map = {}; // Update the map for array responses
+                        data.forEach(function (item) {
+                            var id = item.diseasesTestId;
+                            var name = item.diseasesTestName;
+                            map[name] = {
+                                id: id,
+                                name: name
+                            };
+                        });
+                    } else if (typeof data === 'object') {
+                        // Handle a single object
+                        items.push(data.diseasesTestName);
+                        map = {}; // Update the map for single object response
+                        var id = data.diseasesTestId;
+                        var name = data.diseasesTestName;
+                        map[name] = {
+                            id: id,
+                            name: name
+                        };
+                    }
+
+                    response(items);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        },
+        updater: function (item) {
+            if (map[item]) {
+                // Check if the item exists in the map
+                $("#updateDiseaseTest").val(map[item].id);
+            }
+            return item;
+        }
+    });
+
+    // Check patient existence on leaving the patient ID input
+    $('#selectPatientid').on('blur', function () {
+        var patientId = $(this).val();
+
+        // Make an AJAX request to the controller action
+        $.ajax({
+            url: "/Patient/CheckPatientExistence",
+            method: "POST",
+            data: { patientId: patientId },
+            success: function (data) {
+                if (data) {
+                    $("#patientGender").val(JSON.stringify(data).trim());
+                    // Show a toast message if the patient exists
+                    var successToast = new bootstrap.Toast(document.getElementById("PatientFound"));
+                    successToast.show();
+                } else {
+                    $('#selectPatientid').val('');
+                    // Show a toast message if the patient exists
+                    var successToast = new bootstrap.Toast(document.getElementById("PatientNotFound"));
+                    successToast.show();
+                }
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                console.log(xhr.responseText);
+            }
+        });
+    });
+
+        $('#select').on('blur', function () {
+            var diseaseNameId = $("#update").val();
+            var diseaseName = $("#select").val();
+
+            $("#diseaseNamePlaceholder").text(diseaseName);
+            // Make an AJAX request to the controller action
+            $.ajax({
+                url: "/Patient/getDiseaseTest",
+                method: "GET",
+                data: { diseaseNameId: diseaseNameId },
+                success: function (data) {;
+                    if (data) {
+                        // Clear the table body
+                    $("#diseaseInfoTable tbody").empty();
+
+                        // Iterate through the data and add rows to the table
+                        console.log(1);
+                        console.log(data);
+                        $.each(data, function (index, disease) {
+                            console.log(2);
+                            console.log(data[index].diseasesTestName);
+                            var newRow = $("<tr>").append(
+                                $("<td>").text(data[index].diseasesTestName)
+                            );
+
+                        $("#diseaseInfoTable tbody").append(newRow);
+                        });
+
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+
+</script>
+
+<script>
+    // Wait for the document to be ready
+    $(document).ready(function () {
+        // Handle form submission
+        $('#medicalTestForm').submit(function (e) {
+            e.preventDefault(); // Prevent the default form submission
+
+            // Serialize the form data
+            var formData = $('#medicalTestForm').serialize();
+
+            // Make an AJAX POST request
+            $.ajax({
+                type: 'POST',
+                url: "/Patient/SubmitMedicalTest", // Use Razor to generate the correct URL
+                data: formData,
+                success: function (data) {
+                    // Handle the success response, e.g., show a success toast message
+                    var successToast = new bootstrap.Toast(document.getElementById("successToast"));
+                    successToast.show();
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    // Handle the error, e.g., display an error message
+                    alert('Error: ' + textStatus);
+                }
+            });
+        });
+    });
+</script>
+

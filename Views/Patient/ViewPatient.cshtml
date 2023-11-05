@@ -1,0 +1,279 @@
+﻿@model List<PatientModel>
+<!-- Add this script tag in your HTML to include jQuery -->
+<style>
+    #patientTable {
+        max-height: 300px; /* Adjust the maximum height as needed */
+        overflow-y: auto;
+    }    
+
+</style>
+
+<div class="container">
+<h2>Patient Details (Latest 3 visits)</h2>
+
+@{
+    string patientId = ViewBag.PatientId.ToString();
+}
+
+@using (Html.BeginForm("ViewPatientById", "Patient", FormMethod.Post))
+{
+    <div class="row">
+        <div class="col">
+            <div class="form-group">
+                <label for="patientId">Patient Id:</label>
+                <input type="text" id="patientId" name="patientId" class="form-control" style="width: 100px;" value="@patientId" />
+            </div>
+        </div>
+        <div class="col">
+            <button type="submit" class="btn btn-primary">View Patient</button>
+        </div>
+    </div><br />
+}
+    
+    @{
+    bool anyValuesPresent = Model.Any(patient =>
+        !string.IsNullOrEmpty(patient.BloodPressure) ||
+        !string.IsNullOrEmpty(patient.PulseRate) ||
+        !string.IsNullOrEmpty(patient.Weight) ||
+        !string.IsNullOrEmpty(patient.SpO2));
+
+    if (anyValuesPresent)
+    {
+    <table id="tblpatientDetails" class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Patient Name</th>
+                <th>Mobile No</th>
+                <th>Address</th>
+                <th>Sex</th>
+                <th>Age</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Any()) // Check if the Model is not empty
+            {
+                foreach (var patient in Model)
+                {
+                    <tr>
+                        <td>@patient.PatientName</td>
+                        <td>@patient.MobileNo</td>
+                        <td>@patient.Address</td>
+                        <td>@patient.Sex</td>
+                        <td>@patient.Age</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+    <br />
+
+    <table class="table table-bordered" id="patientTable">
+        <thead>
+            <tr>
+                <th>Blood Pressure</th>
+                <th>Pulse Rate</th>
+                <th>Weight</th>
+                <th>SpO2</th>
+                <th>Visit Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Any()) // Check if the Model is not empty
+            {
+                foreach (var patient in Model)
+                {
+                    <tr>
+                        <td>@patient.BloodPressure</td>
+                        <td>@patient.PulseRate</td>
+                        <td>@patient.Weight</td>
+                        <td>@patient.SpO2</td>
+                        <td>@patient.Date.ToShortDateString()</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+            <table class="table table-bordered" id="patientDiseaseTable">
+                <thead>
+                    <tr>
+                        <th>Test Name</th>
+                        <th>Value</th>
+                        <th>Status</th>
+                        <th>Test Taken Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Any()) // Check if the Model is not empty
+                    {
+                        foreach (var patient in Model)
+                        {
+                            <tr>
+                                <td>@patient.TestName</td>
+                                <td>@patient.Value</td>
+                                <td>@patient.Status</td>
+                                <td>@patient.TestTakenDate</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+
+            <table class="table table-bordered" id="patientClinicalNotes">
+                <thead>
+                    <tr>
+                        <th>Clinical Notes</th>
+                        <th>Entered  Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Any()) // Check if the Model is not empty
+                    {
+                        foreach (var patient in Model)
+                        {
+                            <tr>
+                                <td>Test 1</td>
+                                <td>@patient.TestTakenDate</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+
+            <table class="table table-bordered" id="patientMedicationNotes">
+                <thead>
+                    <tr>
+                        <th>Medication Notes</th>
+                        <th>Entered  Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Any()) // Check if the Model is not empty
+                    {
+                        foreach (var patient in Model)
+                        {
+                            <tr>
+                                <td>Paracetomol</td>
+                                <td>@patient.TestTakenDate</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+    <div style="margin-bottom: 50px;">
+        <button type="button" class="btn btn-primary" id="addRow">Add Row</button>
+        <button type="button" class="btn btn-success" id="saveButton">Save</button>
+    </div>
+        }
+        else
+        {
+    <div class="alert alert-warning" id="noRecordsMessage">
+        No records found.
+    </div>
+        }
+        }
+<div class="position-fixed bottom-0 end-0 p-3" id="toastContainer">
+    <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="5000">
+        <div class="toast-header">
+            <strong class="me-auto">Success</strong>
+            <small>Just now</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            Records saved successfully.
+        </div>
+    </div>
+</div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+    // Add Row button click handler
+    $("#addRow").click(function () {
+        var newRow = `
+                <tr>
+                        <td><input type="text" class="form-control" name="BloodPressure" /></td>
+                        <td><input type="text" class="form-control" name="PulseRate" /></td>
+                        <td><input type="text" class="form-control" name="Weight" /></td>
+                        <td><input type="text" class="form-control" name="SpO2" /></td>
+                        <td><input type="date" class="form-control" name="VisitDate" /></td>
+                    <td>
+                        <button type="button" class="btn btn-danger delete-row">Delete</button>
+                    </td>
+                </tr>`;
+        $("#patientTable tbody").append(newRow);
+    });
+
+    // Delete Row button click handler
+    $("#patientTable").on("click", ".delete-row", function () {
+        $(this).closest("tr").remove();
+    });
+
+    // Save button click handler
+    $("#saveButton").click(function () {
+        var rowsData = [];
+        $("#patientTable tbody tr").each(function () {
+            var row = $(this);
+            var bloodPressure = row.find("input[name='BloodPressure']").val();
+            var pulseRate = row.find("input[name='PulseRate']").val();
+            var weight = row.find("input[name='Weight']").val();
+            var spO2 = row.find("input[name='SpO2']").val();
+            var visitDate = row.find("input[name='VisitDate']").val();
+
+            if (bloodPressure !== undefined && pulseRate !== undefined && weight !== undefined && spO2 !== undefined && visitDate !== undefined) {
+                rowsData.push({
+                    BloodPressure: bloodPressure,
+                    PulseRate: pulseRate,
+                    Weight: weight,
+                    SpO2: spO2,
+                    VisitDate: visitDate,
+                });
+            }
+        });
+
+        // Send data to your controller for saving
+        $.ajax({
+            type: "POST",
+            url: "/Patient/SavePatientRows",
+            data: { patientId: $("#patientId").val(), rows: rowsData },
+            success: function (data) {
+                var successToast = new bootstrap.Toast(document.getElementById('successToast'));
+                successToast.show();
+
+            },
+            error: function () {
+                // Handle errors
+                alert("An error occurred while saving.");
+            }
+        });
+    });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        var seen = {};
+
+        $("#tblpatientDetails tbody tr").each(function () {
+            var name = $(this).find("td:first").text();
+            if (seen[name]) {
+                $(this).hide();
+            } else {
+                seen[name] = true;
+            }
+        });
+    });
+</script>
+
+<script>
+    // Use JavaScript to show/hide the "No records found" message based on the Model
+    document.addEventListener("DOMContentLoaded", function () {
+        var noRecordsMessage = document.getElementById("noRecordsMessage");
+        if (!@Model.Any()) {
+            noRecordsMessage.style.display = "block"; // Show the message
+        } else {
+            noRecordsMessage.style.display = "none"; // Hide the message
+        }
+    });
+</script>

@@ -1,0 +1,261 @@
+﻿@model List<DiseaseModel>
+<h2>Add Medical Test</h2>
+
+@using (Html.BeginForm("SubmitMedicalTest", "MedicalTest", FormMethod.Post))
+{   
+    <div class="row">
+        <label for="diseaseName">Enter Disease Name:</label>
+        <div class="form-group col-md-5"> <input type="text" autocomplete="off" id="select" class="form-control" /> </div>
+        <div class="form-group col-md-5"> <input style="display:none" type="text" id="update" disabled class="form-control" /> </div>
+    </div>
+    <br />
+    <h3>Medical Test Values</h3>
+    <div class="table-responsive">
+        <table class="table table-bordered" id="testTable">
+            <thead>
+                <tr>
+                    <th>Test Name</th>
+                    <th>Gender</th>
+                    <th colspan="2">Normal</th>
+                    <th colspan="2">Above Normal</th>
+                    <th colspan="2">High</th>
+                    <th colspan="2">Higher</th>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th>Min Value</th>
+                    <th>Max Value</th>
+                    <th>Min Value</th>
+                    <th>Max Value</th>
+                    <th>Min Value</th>
+                    <th>Max Value</th>
+                    <th>Min Value</th>
+                    <th>Max Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><input type="text" name="Test" class="form-control" style="width: 180px;" required /></td>
+                    <td>
+                        <select name="Gender" class="form-control" required>
+                            <option value="M" selected>M</option>
+                            <option value="F">F</option>
+                            <option value="O">O</option>
+                        </select>
+                    </td>
+                    <td><input type="number" name="NormalStart" class="form-control" style="width: 100px;" required /></td>
+                    <td><input type="number" name="NormalMax" class="form-control" style="width: 100px;" required /></td>
+                    <td><input type="number" name="AboveNormalMin" class="form-control" style="width: 100px;" required /></td>
+                    <td><input type="number" name="AboveNormalMax" class="form-control" style="width: 100px;" required /></td>
+                    <td><input type="number" name="HighMin" class="form-control" style="width: 100px;" required /></td>
+                    <td><input type="number" name="HighMax" class="form-control" style="width: 100px;" required /></td>
+                    <td><input type="number" name="HigherMin" class="form-control" style="width: 100px;" required /></td>
+                    <td><input type="number" name="HigherMax" class="form-control" style="width: 100px;" required /></td>
+                    <td>
+                        <button type="button" class="btn btn-danger delete-row">Delete</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div style="padding-bottom:90px;padding-top:40px">
+    <button type="button" class="btn btn-primary" id="addRow">Add Row</button>
+    <button type="submit" class="btn btn-success">Save</button>
+    <button type="button" class="btn btn-danger" id="deleteAllRows">Delete All</button>
+    </div>
+    <div class="position-fixed bottom-0 end-0 p-3" id="toastContainer">
+        <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="5000">
+            <div class="toast-header">
+                <strong class="me-auto">Success</strong>
+                <small>Just now</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Records saved successfully.
+            </div>
+        </div>
+    </div>
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+
+<script>
+    var map = {}; // Declare map globally
+
+    $("#select").typeahead({
+        minLength: 1,
+        source: function (request, response) {
+            $.ajax({
+                url: "/MedicalTest/GetDiseaseNames",
+                data: {
+                    "term": request
+                },
+                type: "GET",
+                contentType: "json",
+                success: function (data) {
+                    var items = [];
+
+                    if (Array.isArray(data)) {
+                        // Extract disease names from the objects and create an array of strings
+                        items = data.map(function (item) {
+                            return item.diseaseName;
+                        });
+
+                        map = {}; // Update the map for array responses
+                        data.forEach(function (item) {
+                            var id = item.diseasesId;
+                            var name = item.diseaseName;
+                            map[name] = {
+                                id: id,
+                                name: name
+                            };
+                        });
+                    } else if (typeof data === 'object') {
+                        // Handle a single object
+                        items.push(data.diseaseName);
+                        map = {}; // Update the map for single object response
+                        var id = data.diseasesId;
+                        var name = data.diseaseName;
+                        map[name] = {
+                            id: id,
+                            name: name
+                        };
+                    }
+
+                    response(items);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        },
+        updater: function (item) {
+            if (map[item]) {
+                // Check if the item exists in the map
+                $("#update").val(map[item].id);
+            }
+            return item;
+        }
+    });
+
+
+</script>
+
+<script>
+    // Add Row button click handler
+    $("#addRow").click(function () {
+        var newRow = `
+                    <tr>
+                        <td><input type="text" name="Test" class="form-control" style="width: 180px;" required /></td>
+                        <td>
+                            <select name="Gender" class="form-control" required>
+                                <option value="M" selected>M</option>
+                                <option value="F">F</option>
+                                <option value="O">O</option>
+                            </select>
+                        </td>
+                        <td><input type="number" name="NormalStart" class="form-control" style="width: 100px;" required /></td>
+                        <td><input type="number" name="NormalMax" class="form-control" style="width: 100px;" required /></td>
+                        <td><input type="number" name="AboveNormalMin" class="form-control" style="width: 100px;" required /></td>
+                        <td><input type="number" name="AboveNormalMax" class="form-control" style="width: 100px;" required /></td>
+                        <td><input type="number" name="HighMin" class="form-control" style="width: 100px;" required /></td>
+                        <td><input type="number" name="HighMax" class="form-control" style="width: 100px;" required /></td>
+                        <td><input type="number" name="HigherMin" class="form-control" style="width: 100px;" required /></td>
+                        <td><input type="number" name="HigherMax" class="form-control" style="width: 100px;" required /></td>
+                        <td>
+                            <button type="button" class="btn btn-danger delete-row">Delete</button>
+                        </td>
+                    </tr>`;
+        $("#testTable tbody").append(newRow);
+    });
+</script>
+
+
+<script>
+     // Attach a submit event handler to the form
+    $("form").submit(function (e) {
+        e.preventDefault(); // Prevent the default form submission
+
+        var formData = {
+            diseaseName: $("#update").val(), // Get DiseaseName from input
+            DiseaseTests: [] // Initialize an array to store test values
+        };
+
+        // Loop through the rows in the table and add the test values to the array
+        $("#testTable tbody tr").each(function () {
+            var row = $(this);
+            var test = {
+                DiseasesTestName: row.find("input[name='Test']").val(),
+                Gender: row.find("select[name='Gender']").val(),
+                Ref_NormalStartValue: parseFloat(row.find("input[name='NormalStart']").val()),
+                Ref_NormalEndValue: parseFloat(row.find("input[name='NormalMax']").val()),
+                Ref_AboveNormalStartValue: parseFloat(row.find("input[name='AboveNormalMin']").val()),
+                Ref_AboveNormalEndValue: parseFloat(row.find("input[name='AboveNormalMax']").val()),
+                Ref_HighStartValue: parseFloat(row.find("input[name='HighMin']").val()),
+                Ref_HighEndValue: parseFloat(row.find("input[name='HighMax']").val()),
+                Ref_HigherStartValue: parseFloat(row.find("input[name='HigherMin']").val()),
+                Ref_HigherEndValue: parseFloat(row.find("input[name='HigherMax']").val())
+            };
+            formData.DiseaseTests.push(test);
+        });
+        
+        // Send the data to the controller action using AJAX
+        $.ajax({
+            url: "/MedicalTest/SaveMedicalTest", // Modify the URL as needed
+            type: "POST",
+            data: JSON.stringify(formData), // Convert to JSON
+            contentType: "application/json",
+            success: function (result) {
+                // Handle success, e.g., display a success message
+                var successToast = new bootstrap.Toast(document.getElementById('successToast'));
+                successToast.show();
+            },
+            error: function (error) {
+                // Handle errors, e.g., display an error message
+                $("#ajaxResult").html("An error occurred while saving data.");
+            }
+        });
+    });
+
+    // Add a click handler for the delete button
+    $("#testTable").on("click", ".delete-row", function () {
+        $(this).closest("tr").remove();
+    });
+
+    // Add a click handler for the "Delete All" button
+    $("#deleteAllRows").click(function () {
+        // Remove all rows
+        $("#testTable tbody tr").remove();
+
+        // Add an empty first row
+        var emptyRow = `
+            <tr>
+                <td><input type="text" name="Test" class="form-control" style="width: 180px;" required /></td>
+                <td>
+                    <select name="Gender" class="form-control" required>
+                        <option value="M" selected>M</option>
+                        <option value="F">F</option>
+                        <option value="O">O</option>
+                    </select>
+                </td>
+                <td><input type="number" name="NormalStart" class="form-control" style="width: 100px;" required /></td>
+                <td><input type="number" name="NormalMax" class="form-control" style="width: 100px;" required /></td>
+                <td><input type="number" name="AboveNormalMin" class="form-control" style="width: 100px;" required /></td>
+                <td><input type="number" name="AboveNormalMax" class="form-control" style="width: 100px;" required /></td>
+                <td><input type="number" name="HighMin" class="form-control" style="width: 100px;" required /></td>
+                <td><input type="number" name="HighMax" class="form-control" style="width: 100px;" required /></td>
+                <td><input type="number" name="HigherMin" class="form-control" style="width: 100px;" required /></td>
+                <td><input type="number" name="HigherMax" class="form-control" style="width: 100px;" required /></td>
+                <td>
+                    <button type="button" class="btn btn-danger delete-row">Delete</button>
+                </td>
+            </tr>`;
+        $("#testTable tbody").append(emptyRow);
+    });
+
+
+</script>

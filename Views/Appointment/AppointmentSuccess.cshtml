@@ -1,0 +1,51 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewBag.Title</title>
+    <style>
+        body {
+            background: linear-gradient(to right, #6E45E2, #FF5733); /* Background gradient */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0; /* Remove default margin to center content */
+        }
+
+        .login-box {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            background: linear-gradient(to right, #FF5733, #6E45E2);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="login-box">
+            <h1>Appointment Registered Successfully</h1>
+            <p>Your appointment has been successfully registered with the following details:</p>
+            <p><strong>Appointment ID:</strong> @ViewBag.AppointmentId</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="alert alert-info text-center">
+            <p><strong>Disclaimer:</strong> This appointment is confirmed but may be subject to change or cancellation based on doctor availability and emergency situations. We will notify you in case of any changes.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,179 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container">
+    <h1 class="text-center">Welcome to Your Dashboard</h1>
+
+    <div class="row">
+        <!-- Patient Overview Card -->
+        <div class="col-md-3 mb-4">
+            <div class="card card-custom bg-info text-white d-flex flex-column h-100">
+                <div class="card-body flex-fill">
+                    <h5 class="card-title"><i class="fas fa-user"></i> Patient Overview</h5>
+                    <p>Total Patients: 500</p>
+                    <p>New Patients: 30</p>
+                    <p>Returning Patients: 470</p>
+                    <!-- Include charts or graphs here to visualize data -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Appointments Card -->
+        <div class="col-md-3 mb-4">
+            <div class="card card-custom bg-primary text-white d-flex flex-column h-100">
+                <div class="card-body flex-fill">
+                    <h5 class="card-title"><i class="fas fa-calendar-day"></i> Upcoming Appointments</h5>
+                    <ul>
+                        <li>Patient: John Doe</li>
+                        <li>Time: 10:00 AM</li>
+                        <li>Reason: Checkup</li>
+                        <!-- Include more upcoming appointments -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Patient Visits Card -->
+        <div class="col-md-3 mb-4">
+            <div class="card card-custom bg-secondary text-white d-flex flex-column h-100">
+                <div class="card-body flex-fill">
+                    <h5 class="card-title"><i class="fas fa-hospital"></i> Patient Visits</h5>
+                    <p>Daily Visits: 50</p>
+                    <p>Weekly Visits: 350</p>
+                    <p>Monthly Visits: 1500</p>
+                    <!-- Include charts or graphs to visualize data -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Medication Tracking Card -->
+        <div class="col-md-3 mb-4">
+            <div class="card card-custom bg-success text-white d-flex flex-column h-100">
+                <div class="card-body flex-fill">
+                    <h5 class="card-title"><i class="fas fa-pills"></i> Medication Tracking</h5>
+                    <ul>
+                        <li>Patient: Johnson</li>
+                        <li>Medication: Aspirin</li>
+                        <li>Dosage: 100mg</li>
+                        <li>Refill Date: 10/15/2023</li>
+                        <!-- Include more medication tracking data -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Billing and Payments Card -->
+        <div class="col-md-3 mb-4">
+            <div class="card card-custom bg-warning text-white d-flex flex-column h-100">
+                <div class="card-body flex-fill">
+                    <h5 class="card-title"><i class="fas fa-file-invoice-dollar"></i> Billing and Payments</h5>
+                    <p>Revenue: ₹10,000</p>
+                    <p>Outstanding Bills: ₹2,500</p>
+                    <p>Pending Insurance Claims: ₹1,000</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Medical Records Card -->
+        <div class="col-md-3 mb-4">
+            <div class="card card-custom bg-danger text-white d-flex flex-column h-100">
+                <div class="card-body flex-fill">
+                    <h5 class="card-title"><i class="fas fa-file-medical"></i> Medical Records</h5>
+                    <p>Diagnoses: Diabetes, Hypertension</p>
+                    <p>Treatment Plans: Medication, Diet</p>
+                    <p>Lab Results: Blood Pressure, Cholesterol</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- To-Do List Card -->
+        <div class="col-md-3 mb-4">
+            <div class="card card-custom bg-info text-white d-flex flex-column h-100">
+                <div class="card-body flex-fill">
+                    <h5 class="card-title"><i class="fas fa-clipboard-list"></i> To-Do List</h5>
+                    <ul>
+                        <li>Order Supplies</li>
+                        <li>Schedule Maintenance</li>
+                        <li>Follow Up on Insurance Claims</li>
+                        <!-- Include more to-do items -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Patient Feedback Card -->
+        <div class="col-md-3 mb-4">
+            <div class="card card-custom bg-success text-white d-flex flex-column h-100">
+                <div class="card-body flex-fill">
+                    <h5 class="card-title"><i class="fas fa-comments"></i> Patient Feedback</h5>
+                    <p>Overall Satisfaction: 4.5/5</p>
+                    <p>Feedback Comments: "Great service!"</p>
+                    <!-- Include more patient feedback data -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Health Tips Card -->
+        <div class="col-md-3 mb-4">
+            <div class="card card-custom bg-primary text-white d-flex flex-column h-100">
+                <div class="card-body flex-fill">
+                    <h5 class="card-title"><i class="fas fa-heartbeat"></i> Health Tips</h5>
+                    <p>Article 1: "Healthy Eating Habits"</p>
+                    <p>Article 2: "Exercise Tips"</p>
+                    <!-- Include more health tips -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Emergency Contacts Card -->
+        <div class="col-md-3 mb-4">
+            <div class="card card-custom bg-danger text-white d-flex flex-column h-100">
+                <div class="card-body flex-fill">
+                    <h5 class="card-title"><i class="fas fa-phone"></i> Emergency Contacts</h5>
+                    <p>Hospital: 123-456-7890</p>
+                    <p>Pharmacy: 987-654-3210</p>
+                    <!-- Include more emergency contact numbers -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Appointment Requests Card -->
+        <div class="col-md-3 mb-4">
+            <div class="card card-custom bg-warning text-white d-flex flex-column h-100">
+                <div class="card-body flex-fill">
+                    <h5 class="card-title"><i class="fas fa-calendar-plus"></i> Appointment Requests</h5>
+                    <p>Patient Name: Jane Doe</p>
+                    <p>Requested Date: 10/20/2023</p>
+                    <p>Reason: Checkup</p>
+                    <!-- Include more appointment request data -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Health Alerts Card -->
+        <div class="col-md-3 mb-4">
+            <div class="card card-custom bg-info text-white d-flex flex-column h-100">
+                <div class="card-body flex-fill">
+                    <h5 class="card-title"><i class="fas fa-exclamation-triangle"></i> Health Alerts</h5>
+                    <p>Flu Season Alert: Get Vaccinated!</p>
+                    <p>Clinic Hours Change: 10/15/2023</p>
+                    <!-- Include more health alerts -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Staff Information Card -->
+        <div class="col-md-3 mb-4">
+            <div class="card card-custom bg-secondary text-white d-flex flex-column h-100">
+                <div class="card-body flex-fill">
+                    <h5 class="card-title"><i class="fas fa-users"></i> Staff Information</h5>
+                    <p>Doctor: Dr. Smith</p>
+                    <p>Nurse: Nurse Johnson</p>
+                    <p>Receptionist: John Smith</p>
+                    <!-- Include more staff information -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

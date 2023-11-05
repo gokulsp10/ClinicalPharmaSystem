@@ -1,0 +1,34 @@
+﻿/* Styling for toast container */
+#toastContainer {
+    position: fixed;
+    bottom: 20px; /* Adjust the distance from the bottom as needed */
+    right: 20px; /* Adjust the distance from the right as needed */
+    z-index: 999; /* Adjust the z-index as needed to make it appear above other content */
+}
+
+/* Styling for the success toast */
+#successToast {
+    background-color: #28a745; /* Background color */
+    color: #fff; /* Text color */
+    max-width: 300px; /* Adjust the maximum width as needed */
+    border-radius: 8px; /* Add rounded corners */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
+}
+
+    /* Styling for the toast header */
+    #successToast .toast-header {
+        background-color: rgba(0, 0, 0, 0.2); /* Header background color */
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Header border */
+        padding: 8px; /* Padding for the header */
+        border-radius: 8px 8px 0 0; /* Rounded corners for the top */
+    }
+
+    /* Styling for the close button */
+    #successToast .btn-close {
+        color: #fff; /* Close button color */
+    }
+
+    /* Styling for the toast body */
+    #successToast .toast-body {
+        padding: 8px; /* Padding for the body content */
+    }

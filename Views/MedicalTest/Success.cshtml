@@ -1,0 +1,24 @@
+﻿<div class="position-fixed bottom-0 end-0 p-3" id="toastContainer">
+    <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="5000">
+        <div class="toast-header">
+            <strong class="me-auto">Success</strong>
+            <small>Just now</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            Records saved successfully.
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        var successToast = new bootstrap.Toast(document.getElementById("successToast"));
+        successToast.show();
+
+        setTimeout(function () {
+            window.location.href = "/MedicalTest/ViewMedicalTests"; // Redirect to the desired URL
+        }, 3000); // Delay the redirection for 5000 milliseconds (5 seconds)
+    });
+</script>
