@@ -1,0 +1,14 @@
+# Visual Studio files
+.vscode/
+.vs/
+obj/
+bin/
+
+# User-specific files
+*.suo
+*.user
+*.sln.docstates
+
+# Dependency directories
+bin/
+obj/
