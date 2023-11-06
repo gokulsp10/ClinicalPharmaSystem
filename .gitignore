@@ -17,3 +17,14 @@ obj/
 /obj/ClinicalPharmaSystem.csproj.nuget.g.targets
 /obj/project.assets.json
 /obj/project.nuget.cache
+/.vs/ClinicalPharmaSystem/DesignTimeBuild/.dtbcache.v2
+/.vs/ClinicalPharmaSystem/FileContentIndex/b74894dd-a744-4c92-ac9c-4442225a11b4.vsidx
+/.vs/ClinicalPharmaSystem/FileContentIndex/c188b295-2e33-46a2-a8b8-5747249b10e0.vsidx
+/.vs/ClinicalPharmaSystem/v17/.futdcache.v2
+/.vs/ClinicalPharmaSystem/v17/.suo
+/.vs/ProjectEvaluation/clinicalpharmasystem.metadata.v7.bin
+/.vs/ProjectEvaluation/clinicalpharmasystem.projects.v7.bin
+/obj/Debug/net6.0/ClinicalPharmaSystem.dll
+/obj/Debug/net6.0/ClinicalPharmaSystem.pdb
+/bin/Debug/net6.0/ClinicalPharmaSystem.dll
+/bin/Debug/net6.0/ClinicalPharmaSystem.pdb
