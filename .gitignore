@@ -12,3 +12,8 @@ bin/
 # Dependency directories
 bin/
 obj/
+/obj/ClinicalPharmaSystem.csproj.nuget.dgspec.json
+/obj/ClinicalPharmaSystem.csproj.nuget.g.props
+/obj/ClinicalPharmaSystem.csproj.nuget.g.targets
+/obj/project.assets.json
+/obj/project.nuget.cache
