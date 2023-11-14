@@ -2,6 +2,7 @@
 using System.Data.SqlClient;
 using System.Data;
 using Dapper;
+using System.Web.Mvc;
 
 namespace ClinicalPharmaSystem.DataContext
 {
@@ -91,6 +92,21 @@ namespace ClinicalPharmaSystem.DataContext
                 return id;
 
             }
+        }
+
+        public List<string> GetTimeOptions()
+        {
+            List<string> timeOptions;
+           
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                // Query the database to retrieve time options
+                timeOptions = connection.Query<string>("SELECT TimeOption FROM ClinicTimeOptions WHERE IsDeleted = 0").ToList();
+            }
+
+            // Pass the time options to the view
+            return timeOptions;
         }
 
     }

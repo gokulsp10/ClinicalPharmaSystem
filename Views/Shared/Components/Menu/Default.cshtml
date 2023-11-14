@@ -1,0 +1,22 @@
+﻿@model List<MenuViewModel>
+
+<nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+    <div class="position-sticky sidebar-content">
+        <ul class="nav flex-column">
+            @foreach (var primaryMenuItem in Model.GroupBy(item => new { item.PrimaryMenuItemText, item.PrimaryMenuItemIconClass, item.PrimaryMenuItemUrl }))
+            {
+                <li class="nav-item primary-item">
+                    <a class="nav-link" href="@primaryMenuItem.Key.PrimaryMenuItemUrl"><i class="@primaryMenuItem.Key.PrimaryMenuItemIconClass"></i> <span class="nav-link-text">@primaryMenuItem.Key.PrimaryMenuItemText</span></a>
+                    <ul class="nav flex-column ml-3">
+                        @foreach (var secondaryMenuItem in primaryMenuItem)
+                        {
+                            <li class="nav-item secondary-item">
+                                <a class="nav-link" href="@secondaryMenuItem.SecondaryMenuItemUrl">@secondaryMenuItem.SecondaryMenuItemText</a>
+                            </li>
+                        }
+                    </ul>
+                </li>
+            }
+        </ul>
+    </div>
+</nav>

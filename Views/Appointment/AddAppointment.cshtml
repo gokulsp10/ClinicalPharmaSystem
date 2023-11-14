@@ -233,6 +233,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
     <script>
         $(document).ready(function () {
+            // Get the time options from ViewBag
+            // var timeOptions = @Html.Raw(Json.Serialize(ViewBag.TimeOptions));
+            // console.log('test');
+            // console.log(timeOptions);
+            // Populate the time picker with the retrieved time options
+            //populateTimePicker(timeOptions);
+        });
+
+        // ... The rest of your JavaScript code ...
+    </script>
+    <script>
+        $(document).ready(function () {
             // Get the current date and format it as YYYY-MM-DD
             var currentDate = new Date();
             var year = currentDate.getFullYear();
@@ -416,7 +428,7 @@
         var hours24 = ['13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24'];
         var hoursUpdated = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
         var minutes = ['00', '30'];
-        var format = ['AM', 'PM'];
+        var format = ['AM','PM'];
         var time;
         var timeArray = [];
         var items = [];
@@ -427,15 +439,20 @@
         itemList(hours, minutes, format, time, timeArray);
 
         function itemList(hours, minutes, format, time, timeArray) {
-            hours.map(i => {
-                minutes.map(j => {
-                    format.map(k => {
-                        time = i + ":" + j + " " + k;
-                        timeArray.push(time);
-                        this.timeArray = timeArray;
-                    });
-                });
-            });
+            // hours.map(i => {
+            //     minutes.map(j => {
+            //         format.map(k => {
+            //             time = i + ":" + j + " " + k;
+            //             timeArray.push(time);
+            //             // this.timeArray = timeArray;
+            //             this.timeArray = @Html.Raw(Json.Serialize(ViewBag.TimeOptions));
+            //             console.log(this.timeArray);
+            //         });
+            //     });
+            // });
+            this.timeArray = @Html.Raw(Json.Serialize(ViewBag.TimeOptions));
+            console.log('test');
+            console.log(this.timeArray);
         }
 
         function querySubset(query) {

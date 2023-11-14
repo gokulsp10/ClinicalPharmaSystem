@@ -1,12 +1,13 @@
-using ClinicalPharmaSystem.Controllers;
 using ClinicalPharmaSystem.DataContext;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie();
 
 // Configure your database connection here
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -14,8 +15,11 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 // Add the repository to the dependency injection container
 builder.Services.AddTransient<DashboardRepository>(_ => new DashboardRepository(connectionString));
 
-// Add the repository to the dependency injection container
-builder.Services.AddTransient<UserRepository>(_ => new UserRepository(connectionString));
+builder.Services.AddTransient<UserRepository>(serviceProvider =>
+{
+    var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+    return new UserRepository(connectionString, httpContextAccessor);
+});
 
 // Add the repository to the dependency injection container
 builder.Services.AddTransient<PatientRepository>(_ => new PatientRepository(connectionString));
@@ -26,18 +30,39 @@ builder.Services.AddTransient<MedicalTestRepository>(_ => new MedicalTestReposit
 // Add the repository to the dependency injection container
 builder.Services.AddTransient<AppointmentRepository>(_ => new AppointmentRepository(connectionString));
 
-var app = builder.Build(); 
+builder.Services.AddTransient<SettingsRepository>(_ => new SettingsRepository(connectionString));
+
+builder.Services.AddTransient<MenuViewComponent>();
+
+// Add HttpContextAccessor
+builder.Services.AddHttpContextAccessor();
+
+// Add session services
+builder.Services.AddSession();
+
+var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
 }
+
 app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
+
 app.UseAuthorization();
+
+app.Use((context, next) =>
+{
+    return new RoleBasedMiddleware(next, "Home/Login", "Doctor", "Admin", "Pharmacy", "Lab Technician").Invoke(context);
+});
+
+// Use session
+app.UseSession();
 
 app.MapControllerRoute(
     name: "default",

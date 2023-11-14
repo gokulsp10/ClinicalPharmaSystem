@@ -21,7 +21,6 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
             width: 100%;
         }
 
@@ -39,13 +38,14 @@
             <h1>Appointment Registered Successfully</h1>
             <p>Your appointment has been successfully registered with the following details:</p>
             <p><strong>Appointment ID:</strong> @ViewBag.AppointmentId</p>
+            <p><strong>Appointment Date:</strong> @ViewBag.Date</p>
+            <p><strong>Appointment Time:</strong> @ViewBag.Time</p>
+            <p><strong>Appointment Contact:</strong> @ViewBag.Contact</p><br />
+            <div class="alert alert-info text-center">
+                <p><strong>Disclaimer:</strong> This appointment is confirmed but may be subject to change or cancellation based on doctor availability and emergency situations. We will notify you in case of any changes.</p>
+            </div>
         </div>
-    </div>
-
-    <div class="container">
-        <div class="alert alert-info text-center">
-            <p><strong>Disclaimer:</strong> This appointment is confirmed but may be subject to change or cancellation based on doctor availability and emergency situations. We will notify you in case of any changes.</p>
-        </div>
+        
     </div>
 </body>
 </html>

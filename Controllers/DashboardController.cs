@@ -1,4 +1,5 @@
 ﻿using ClinicalPharmaSystem.DataContext;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicalPharmaSystem.Controllers
@@ -11,6 +12,7 @@ namespace ClinicalPharmaSystem.Controllers
             this.dashboardRepository = dashboardRepository;
         }
 
+        [Authorize(Roles = "Doctor,Admin")]
         public IActionResult Clinical ()
         {
             return View();

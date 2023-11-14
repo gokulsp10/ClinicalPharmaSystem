@@ -26,5 +26,9 @@ namespace ClinicalPharmaSystem.Models
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         [Display(Name = "Confirm Password")]
         public string? ConfirmPassword { get; set; }
+
+        public int ClinicalId { get; set; }
+
     }
+
 }

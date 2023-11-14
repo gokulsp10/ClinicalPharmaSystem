@@ -1,6 +1,8 @@
 ﻿using ClinicalPharmaSystem.DataContext;
 using ClinicalPharmaSystem.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Data.SqlClient;
 
 namespace ClinicalPharmaSystem.Controllers
 {
@@ -15,6 +17,8 @@ namespace ClinicalPharmaSystem.Controllers
 
         public IActionResult AddAppointment()
         {
+            List<string> timeOptions = repository.GetTimeOptions();
+            ViewBag.TimeOptions = timeOptions;
             return View();
         }
 
@@ -33,11 +37,15 @@ namespace ClinicalPharmaSystem.Controllers
                 if (appointmentId != 0)
                 {
                     ViewBag.AppointmentId = appointmentId; // Store the ID in ViewBag
+                    ViewBag.Date = appointment.AppointmentDate;
+                    ViewBag.Time = appointment.AppointmentTime;
+                    ViewBag.Contact = appointment.MobileNumber;
                     return View("AppointmentSuccess");
                 }}
 
             return View("AddAppointment");
         }
+
         [HttpGet]
         public ActionResult CheckAvailability(string appointmentDate, string appointmentTime)
         {
@@ -54,6 +62,6 @@ namespace ClinicalPharmaSystem.Controllers
                 return Content("Not Available"); // You can customize this message
             }
         }
-
+        
     }
 }

@@ -2,6 +2,7 @@
 using System.Data.SqlClient;
 using System.Data;
 using Dapper;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicalPharmaSystem.DataContext
 {
@@ -26,5 +27,6 @@ namespace ClinicalPharmaSystem.DataContext
            var loginViewModel = dbConnection.QueryFirstOrDefault<object>(query, new { UserId = UserId });
             return loginViewModel;
         }
+        
     }
 }
