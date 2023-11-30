@@ -4,7 +4,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
-
+using Microsoft.AspNetCore.Authorization;
 
 namespace ClinicalPharmaSystem.Controllers
 {
@@ -21,6 +21,7 @@ namespace ClinicalPharmaSystem.Controllers
             this._contextAccessor = contextAccessor;
         }
 
+        [Authorize(Roles = "Doctor,Admin")]
         public IActionResult Index()
         {
             return View();
@@ -76,7 +77,23 @@ namespace ClinicalPharmaSystem.Controllers
                     HttpContext.Session.SetString("Email", user.Email);
                     HttpContext.Session.SetString("Initial", !string.IsNullOrEmpty(user.UserName) ? user.UserName[0].ToString() : "");
                     // Redirect to the desired page after successful login
-                    return RedirectToAction("Clinical", "Dashboard");
+                    if(user.RoleName == "Admin")
+                    {
+                        return RedirectToAction("AddEditRoles", "Settings");
+                    }
+                    else if(user.RoleName == "Doctor")
+                    {
+                        return RedirectToAction("Clinical", "Dashboard");
+                    }
+                    else if (user.RoleName == "Lab Technician")
+                    {
+                        return RedirectToAction("AddDisease", "MedicalTest");
+                    }
+                    else if (user.RoleName == "Pharmacy")
+                    {
+                        return RedirectToAction("PharmacyMetrics", "Pharmacy");
+                    }
+
                 }
 
                 TempData["failedlogin"] = "Invalid login attempt.";
@@ -141,7 +158,7 @@ namespace ClinicalPharmaSystem.Controllers
                 else
                 {
                     // Set a TempData message for successful registration
-                    TempData["RegistrationSuccessMessage"] = "Registration successful! Please contact administrator to activate your account. Redirecting to the Login...";
+                    TempData["RegistrationSuccessMessage"] = "Registration successful! Please contact administrator to activate your account.";
                 }
             }
                 return View(model);

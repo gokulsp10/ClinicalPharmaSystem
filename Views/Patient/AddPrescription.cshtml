@@ -1,0 +1,454 @@
+﻿@model List<ClinicalPharmaSystem.Models.PatientView.PatientPrescription>
+<h2>Prescription</h2>
+<div class="row">
+    <div class="col-6">
+        <label for="PatientId">Enter Patient Id:</label>
+        <div class="form-group col-md-6">
+            <input type="text" autocomplete="off" id="selectPatientid" name="PatientId" class="form-control" />
+        </div>
+    </div>
+</div>
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="add-tab" data-bs-toggle="tab" data-bs-target="#add" type="button" role="tab" aria-controls="add" aria-selected="true">Add Prescription</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="view-edit-tab" onclick="getPrescriptionWithoutid()" data-bs-toggle="tab" data-bs-target="#view-edit" type="button" role="tab" aria-controls="view-edit" aria-selected="false">View/Edit Prescription</button>
+    </li>
+</ul>
+<div class="tab-content" style="display: none;" id="myTabContent">
+    <div class="tab-pane fade show active" id="add" role="tabpanel" aria-labelledby="add-tab">
+        <!-- Add Clinical Notes Form -->
+        <h4>Add Prescription</h4><br />
+        @using (Html.BeginForm("Index", "Patient", FormMethod.Post))
+        {
+            <table id="prescriptionTable" class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Frequency</th>
+                        <th>Instructions</th>
+                        <th>Days</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr id="rowTemplate" style="display: none;">
+                        <td><input class="form-control" name="Name" /></td>
+                        <td><input class="form-control" name="Frequency" /></td>
+                        <td><input class="form-control" name="Instructions" /></td>
+                        <td><input class="form-control" name="Days" /></td>
+                        <td><button type="button" class="btn btn-danger" onclick="deleteRow(this)">Delete</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button type="button" class="btn btn-primary" onclick="addRow()">Add Prescription</button>
+            <button type="button" class="btn btn-success" onclick="savePrescription()">Save</button>
+            <div class="position-fixed bottom-0 end-0 p-3" id="toastContainer">
+                <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
+                    <div class="toast-header">
+                        <strong class="me-auto">Success</strong>
+                        <small>Just now</small>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body">
+                        Prescription saved successfully.
+                    </div>
+                </div>
+            </div>
+            <div class="position-fixed bottom-0 end-0 p-3" id="toastContainer">
+                <div id="PatientFound" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000" style="background-color: green; color: white;">
+                    <div class="toast-header">
+                        <strong class="me-auto">Information</strong>
+                        <small>Just now</small>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close" style="color: white;"></button>
+                    </div>
+                    <div class="toast-body">
+                        Patient Id exists.
+                    </div>
+                </div>
+            </div>
+
+            <div class="position-fixed bottom-0 end-0 p-3" id="toastContainer">
+                <div id="PatientNotFound" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000" style="background-color: red; color: white;">
+                    <div class="toast-header">
+                        <strong class="me-auto">Information</strong>
+                        <small>Just now</small>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close" style="color: white;"></button>
+                    </div>
+                    <div class="toast-body">
+                        Patient Id does not exist.
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="tab-pane fade" id="view-edit" role="tabpanel" aria-labelledby="view-edit-tab">
+        <!-- View/Edit Clinical Notes Content -->
+        <h4>View/Edit Prescription</h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Serial Number</th>
+                    <th>Name</th>
+                    <th>Frequency</th>
+                    <th>Instructions</th>
+                    <th>Days</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="prescriptionTableBody">
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var prescription in Model)
+                    {
+                        <tr>
+                            <td>@prescription.SerialNumber</td>
+                            <td><input type="text" class="form-control" value="@prescription.Name" /></td>
+                            <td><input type="text" class="form-control" value="@prescription.Frequency" /></td>
+                            <td><input type="text" class="form-control" value="@prescription.Instructions" /></td>
+                            <td><input type="text" class="form-control" value="@prescription.Days" /></td>
+                            <td>
+                                <button type="button" class="btn btn-primary" onclick="updatePrescription(@prescription.SerialNumber)">Update</button>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-danger" onclick="deletePrescription(@prescription.SerialNumber)">Delete</button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4">No clinical notes available</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div class="position-fixed top-0 end-0 p-3" id="toastContainer">
+            <div id="updateToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000" style="z-index: 1000;">
+                <div style="background-color:green;color:black" class="toast-header">
+                    <strong class="me-auto">Success</strong>
+                    <small>Just now</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    Prescription updated successfully.
+                </div>
+            </div>
+        </div>
+        <div class="position-fixed top-0 end-0 p-3" id="toastContainer">
+            <div id="deleteToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000" style="z-index: 1000;">
+                <div style="background-color:green;color:black" class="toast-header">
+                    <strong class="me-auto">Success</strong>
+                    <small>Just now</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    Prescription deleted successfully.
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Check patient existence on leaving the patient ID input
+        $('#selectPatientid').on('blur', function () {
+            var patientId = $(this).val();
+
+            // Make an AJAX request to the controller action
+            $.ajax({
+                url: "/Patient/CheckPatientExistence",
+                method: "POST",
+                data: { patientId: patientId },
+                success: function (data) {
+                    if (data) {
+                        var div = document.getElementById('myTabContent');
+                        div.style.display = 'block';
+                        // getClinicalNotes(patientId);
+                        $("#patientGender").val(JSON.stringify(data).trim());
+                        $('#PatientidSubmit').val($('#selectPatientid').val());
+                        // Show a toast message if the patient exists
+                        var successToast = new bootstrap.Toast(document.getElementById("PatientFound"));
+                        successToast.show();
+                    } else {
+                        var div = document.getElementById('myTabContent');
+                        div.style.display = 'none';
+                        $('#selectPatientid').val('');
+                        // Show a toast message if the patient exists
+                        var successToast = new bootstrap.Toast(document.getElementById("PatientNotFound"));
+                        successToast.show();
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
+
+<script>
+    var rowCount = 0;
+
+    function addRow() {
+        var table = document.getElementById("prescriptionTable");
+        var row = table.insertRow(table.rows.length - 1);
+        var rowTemplate = document.getElementById("rowTemplate");
+        var newRow = rowTemplate.cloneNode(true);
+        newRow.style.display = "table-row";
+        newRow.id = "";
+        newRow.innerHTML = newRow.innerHTML.replace(/\[0\]/g, "[" + rowCount + "]");
+        table.tBodies[0].appendChild(newRow);
+        rowCount++;
+    }
+
+    function deleteRow(btn) {
+        var row = btn.parentNode.parentNode;
+        row.parentNode.removeChild(row);
+    }
+
+    function savePrescription() {
+        var patientId = document.getElementById("selectPatientid").value;
+        var patientPrescriptions = [];
+
+        $("#prescriptionTable tbody tr").each(function () {
+            var name = $(this).find("input[name='Name']").val();
+            var frequency = $(this).find("input[name='Frequency']").val();
+            var instructions = $(this).find("input[name='Instructions']").val();
+            var days = $(this).find("input[name='Days']").val();
+
+            // Check for null or empty string
+            if (name && frequency && instructions && days &&
+                name.trim() !== "" && frequency.trim() !== "" && instructions.trim() !== "" && days.trim() !== "") {
+                var prescription = {
+                    Name: name.trim(),
+                    Frequency: frequency.trim(),
+                    Instructions: instructions.trim(),
+                    Days: days.trim()
+                };
+                patientPrescriptions.push(prescription);
+            }
+        });
+
+        console.log(patientId);
+        console.log(patientPrescriptions);
+
+        // Prepare query string
+        var queryString = "patientId=" + encodeURIComponent(patientId);
+
+        if (patientPrescriptions.length > 0) {
+            for (var i = 0; i < patientPrescriptions.length; i++) {
+                queryString += "&prescriptions[" + i + "].Name=" + encodeURIComponent(patientPrescriptions[i].Name) +
+                    "&prescriptions[" + i + "].Frequency=" + encodeURIComponent(patientPrescriptions[i].Frequency) +
+                    "&prescriptions[" + i + "].Instructions=" + encodeURIComponent(patientPrescriptions[i].Instructions) +
+                    "&prescriptions[" + i + "].Days=" + encodeURIComponent(patientPrescriptions[i].Days);
+            }
+        }
+
+        console.log(queryString);
+
+        // AJAX request to send data to controller
+        $.ajax({
+            url: '@Url.Action("SavePrescription", "Patient")' + "?" + queryString,
+            type: 'POST',
+            contentType: 'application/json',
+            success: function (response) {
+                var successToast = new bootstrap.Toast(document.getElementById("successToast"));
+                successToast.show();
+            },
+            error: function (error) {
+                // Handle error, if any
+                console.error(error);
+            }
+        });
+    }
+
+    function updatePrescription(serialNumber) {
+        var row = $("#prescriptionRow_" + serialNumber); // Use the updated row ID
+       
+        var name = row.find("input[id^='nameInput_" + serialNumber + "']").val().trim();
+        var frequency = row.find("input[id^='frequencyInput_" + serialNumber + "']").val().trim();
+        var instructions = row.find("input[id^='instructionsInput_" + serialNumber + "']").val().trim();
+        var days = row.find("input[id^='daysInput_" + serialNumber + "']").val().trim();
+        console.log(name);
+        console.log(frequency);
+        console.log(instructions);
+        console.log(days);
+        var dataToSend = {
+            SerialNumber: serialNumber,
+            Name: name,
+            Frequency: frequency,
+            Instructions: instructions,
+            Days: days
+        };
+
+        var queryString = $.param(dataToSend);
+
+        $.ajax({
+            url: '@Url.Action("UpdatePrescription", "Patient")' + '?' + queryString,
+            type: 'POST',
+            success: function (response) {
+                var successToast = new bootstrap.Toast(document.getElementById("updateToast"));
+                successToast.show();
+            },
+            error: function (error) {
+                // Handle error, if any
+                console.error(error);
+            }
+        });
+    }
+
+
+
+    function deletePrescription(serialNumber) {
+        var dataToSend = {
+            SerialNumber: serialNumber,
+            Name: 'delete',
+            Frequency: '',
+            Instructions: '',
+            Days: ''
+        };
+
+        var queryString = $.param(dataToSend);
+
+        $.ajax({
+            url: '@Url.Action("UpdatePrescription", "Patient")' + '?' + queryString,
+            type: 'POST',
+            success: function (response) {
+                getPrescriptionWithoutid();
+                var successToast = new bootstrap.Toast(document.getElementById("deleteToast"));
+                successToast.show();
+            },
+            error: function (error) {
+                // Handle error, if any
+                console.error(error);
+            }
+        });
+    }
+
+
+</script>
+<script>
+    function getPrescriptionWithoutid() {
+        var xhr = new XMLHttpRequest();
+        var patientId = document.getElementById("selectPatientid").value;
+        // Define the endpoint URL, assuming it's '/Patient/GetClinicalNotes'
+        var url = '/Patient/GetPrescription?PatientId=' + patientId;
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    // Request successful, handle the response
+                    var clinicalNotes = JSON.parse(xhr.responseText);
+                    var mappedData = clinicalNotes.map(item => {
+                        return {
+                            SerialNumber: item.serialNumber,
+                            PatientId: item.patientId,
+                            Name: item.name,
+                            Frequency: item.frequency,
+                            Instructions: item.instructions,
+                            Days: item.days,
+                            CreatedDate: item.createdDate,
+                        };
+                    });
+                    updatePrescriptionTable(mappedData);
+                } else {
+                    // Request failed, handle errors
+                    console.error('Request failed with status:', xhr.status);
+                }
+            }
+        };
+
+        xhr.open('GET', url, true);
+        xhr.send();
+    }
+
+    function updatePrescriptionTable(data) {
+        var tableBody = document.getElementById('prescriptionTableBody');
+        tableBody.innerHTML = ''; // Clear existing table content
+        console.log(data);
+        data.forEach(function (prescription) {
+            var row = document.createElement('tr');
+
+            // Create and append table cells with input fields
+            var serialNumberCell = document.createElement('td');
+            serialNumberCell.textContent = prescription.SerialNumber;
+            row.appendChild(serialNumberCell);
+
+            // Update row ID based on SerialNumber
+            row.id = 'prescriptionRow_' + prescription.SerialNumber;
+
+            var nameCell = document.createElement('td');
+            var nameInput = document.createElement('input');
+            nameInput.type = 'text';
+            nameInput.value = prescription.Name;
+            nameInput.classList.add('form-control');
+            nameInput.style.width = '200px';
+            nameInput.id = 'nameInput_' + prescription.SerialNumber; // Update input ID
+            nameCell.appendChild(nameInput);
+            row.appendChild(nameCell);
+
+            var frequencyCell = document.createElement('td');
+            var frequencyCellInput = document.createElement('input');
+            frequencyCellInput.type = 'text';
+            frequencyCellInput.value = prescription.Frequency;
+            frequencyCellInput.classList.add('form-control');
+            frequencyCellInput.id = 'frequencyInput_' + prescription.SerialNumber; // Update input ID
+            frequencyCell.appendChild(frequencyCellInput);
+            row.appendChild(frequencyCell);
+
+            var instructionsCell = document.createElement('td');
+            var instructionsCellInput = document.createElement('input');
+            instructionsCellInput.type = 'text';
+            instructionsCellInput.value = prescription.Instructions;
+            instructionsCellInput.classList.add('form-control');
+            instructionsCellInput.id = 'instructionsInput_' + prescription.SerialNumber; // Update input ID
+            instructionsCell.appendChild(instructionsCellInput);
+            row.appendChild(instructionsCell);
+
+            var daysCell = document.createElement('td');
+            var daysCellInput = document.createElement('input');
+            daysCellInput.type = 'text';
+            daysCellInput.value = prescription.Days;
+            daysCellInput.classList.add('form-control');
+            daysCellInput.id = 'daysInput_' + prescription.SerialNumber; // Update input ID
+            daysCell.appendChild(daysCellInput);
+            row.appendChild(daysCell);
+
+            var updateCell = document.createElement('td');
+            var updateButton = document.createElement('button');
+            updateButton.type = 'button';
+            updateButton.textContent = 'Update';
+            updateButton.classList.add('btn', 'btn-primary');
+            updateButton.onclick = function () {
+                updatePrescription(prescription.SerialNumber);
+            };
+            updateCell.appendChild(updateButton);
+            row.appendChild(updateCell);
+
+            var deleteCell = document.createElement('td');
+            var deleteButton = document.createElement('button');
+            deleteButton.type = 'button';
+            deleteButton.textContent = 'Delete';
+            deleteButton.classList.add('btn', 'btn-danger');
+            deleteButton.onclick = function () {
+                deletePrescription(prescription.SerialNumber);
+            };
+            deleteCell.appendChild(deleteButton);
+            row.appendChild(deleteCell);
+
+            tableBody.appendChild(row);
+        });
+    }
+
+</script>

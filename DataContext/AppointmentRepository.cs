@@ -3,6 +3,7 @@ using System.Data.SqlClient;
 using System.Data;
 using Dapper;
 using System.Web.Mvc;
+using Microsoft.AspNet.Identity;
 
 namespace ClinicalPharmaSystem.DataContext
 {
@@ -107,6 +108,66 @@ namespace ClinicalPharmaSystem.DataContext
 
             // Pass the time options to the view
             return timeOptions;
+        }
+
+        public List<AppointmentTimeOption> GetClinicalTimes()
+        {
+            List<AppointmentTimeOption> timeOption = new List<AppointmentTimeOption>();
+            using IDbConnection dbConnection = new SqlConnection(connectionString);
+            dbConnection.Open();
+
+            // Replace "Users" with the actual name of your Users table
+            var query = "SELECT * FROM ClinicTimeOptions";
+
+            // Execute the query and return a User object or null if not found
+            timeOption = dbConnection.Query<AppointmentTimeOption>(query).ToList();
+            return timeOption;
+        }
+
+        public int UpdateClinicalTime(AppointmentTimeOption timeOption)
+        {
+            try
+            {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                using (SqlCommand command = new SqlCommand("update ClinicTimeOptions set IsDeleted=@IsDeleted where ID =@ID", connection))
+                {
+                    command.Parameters.AddWithValue("@IsDeleted", timeOption.IsDeleted);
+                    command.Parameters.AddWithValue("@ID", timeOption.ID);
+                    command.ExecuteNonQuery();
+                }
+                    return 1;
+            }
+            }
+            catch (Exception ex)
+            {
+                return 0;
+            }
+        }
+
+        public int SaveAppointmentTimeOption(string timeOption)
+        {
+            var id = 0;
+            using (var connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                string sql = "INSERT INTO ClinicTimeOptions (TimeOption, IsDeleted) " +
+             "OUTPUT Inserted.ID " + // Add this line to capture the ID
+             "VALUES (@TimeOption, @IsDeleted)";
+
+                id = connection.ExecuteScalar<int>(sql, new
+                {
+                    TimeOption = timeOption,
+                    IsDeleted = false
+                });
+
+                // If the insert was successful, 'id' will contain the newly inserted ID
+                return id;
+
+            }
         }
 
     }

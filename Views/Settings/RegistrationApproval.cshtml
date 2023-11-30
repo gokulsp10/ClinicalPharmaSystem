@@ -1,0 +1,95 @@
+﻿@model List<User>
+
+    <p>
+        <h2>Registration Approval</h2>
+    </p>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>User Name</th>
+            <th>Phone Number</th>
+            <th>Role</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr id="row_@user.Id">
+                <td>@user.Id</td>
+                <td>@user.UserName</td>
+                <td>@user.PhoneNumber</td>
+                <td>
+                    <select id="roleDropdown_@user.Id" class="form-control">
+                        @{
+                            // Assuming you have a list of roles passed from the controller
+                            var roles = ViewBag.Roles as List<Role>;
+                        }
+                        @if (roles != null)
+                        {
+                            foreach (var role in roles)
+                            {
+                                <option value="@role.RoleId">@role.RoleName</option>
+                            }
+                        }
+                    </select>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-success" onclick="approveUser('@user.Id')">Approve</button>
+                    <button type="button" class="btn btn-danger" onclick="rejectUser('@user.Id')">Reject</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts
+    {
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    <script>
+        // Define showToast function
+        function showToast(type, message) {
+            toastr[type](message);
+        }
+
+        // Define other functions
+        function approveUser(userId) {
+            var roleId = $("#roleDropdown_" + userId).val();
+            sendAction(userId, roleId, 1); // 1 represents approve
+        }
+
+        function rejectUser(userId) {
+            var roleId = $("#roleDropdown_" + userId).val();
+            sendAction(userId, roleId, 2); // 2 represents reject
+        }
+
+        function sendAction(userId, roleId, action) {
+            $.ajax({
+                type: "POST",
+                url: "/Settings/UpdateUserStatus",
+                data: { Id: userId, RoleId: roleId, action: action },
+                success: function (result) {
+                    if (result.success) {
+                        // Remove the corresponding row from the table
+                        $("#row_" + userId).remove();
+
+                        // Show a success toast message
+                        showToast("success", result.message);
+
+                    } else {
+                        // Show an error toast message
+                        showToast("error", result.message);
+                    }
+                },
+                error: function (error) {
+                    // Handle errors, if needed
+                    showToast("error", "Failed to update user status");
+                }
+            });
+        }
+    </script>
+}
+

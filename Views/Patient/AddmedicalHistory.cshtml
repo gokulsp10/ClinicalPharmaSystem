@@ -1,0 +1,383 @@
+﻿@model List<Medicalhistory>
+<h2>Medical History</h2>
+<div class="row">
+    <div class="col-6">
+        <label for="PatientId">Enter Patient Id:</label>
+        <div class="form-group col-md-6">
+            <input type="text" autocomplete="off" id="selectPatientid" name="PatientId" class="form-control" />
+        </div>
+    </div>
+</div>
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="add-tab" data-bs-toggle="tab" data-bs-target="#add" type="button" role="tab" aria-controls="add" aria-selected="true">Add Medical History</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="view-edit-tab" onclick="getmedicalNotesWithoutid()" data-bs-toggle="tab" data-bs-target="#view-edit" type="button" role="tab" aria-controls="view-edit" aria-selected="false">View/Edit Medical History</button>
+    </li>
+</ul>
+<div class="tab-content" style="display: none;" id="myTabContent">
+    <div class="tab-pane fade show active" id="add" role="tabpanel" aria-labelledby="add-tab">
+        <!-- Add Clinical Notes Form -->
+        <h4>Add Medical History</h4>
+        @using (Html.BeginForm("SubmitMedicalhistory", "Patient", FormMethod.Post, new { id = "medicalTestForm" }))
+        {
+            <input type="text" style="display:none" autocomplete="off" id="PatientidSubmit" name="PatientId" class="form-control" />
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="MedicalHistoryTextText">Enter Medical History:</label>
+                    <div class="form-group">
+                        <textarea style="height:250px" autocomplete="off" id="select" name="MedicalHistoryText" class="form-control"></textarea>
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <button type="submit" id="saveBtn" class="btn btn-success">Save</button>
+            <br />
+            <br />
+            <br />
+
+            <div class="position-fixed bottom-0 end-0 p-3" id="toastContainer">
+                <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
+                    <div class="toast-header">
+                        <strong class="me-auto">Success</strong>
+                        <small>Just now</small>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body">
+                        Records saved successfully.
+                    </div>
+                </div>
+            </div>
+            <div class="position-fixed bottom-0 end-0 p-3" id="toastContainer">
+                <div id="PatientFound" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000" style="background-color: green; color: white;">
+                    <div class="toast-header">
+                        <strong class="me-auto">Information</strong>
+                        <small>Just now</small>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close" style="color: white;"></button>
+                    </div>
+                    <div class="toast-body">
+                        Patient Id exists.
+                    </div>
+                </div>
+            </div>
+
+            <div class="position-fixed bottom-0 end-0 p-3" id="toastContainer">
+                <div id="PatientNotFound" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000" style="background-color: red; color: white;">
+                    <div class="toast-header">
+                        <strong class="me-auto">Information</strong>
+                        <small>Just now</small>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close" style="color: white;"></button>
+                    </div>
+                    <div class="toast-body">
+                        Patient Id does not exist.
+                    </div>
+                </div>
+            </div>
+
+        }
+    </div>
+
+    <div class="tab-pane fade" id="view-edit" role="tabpanel" aria-labelledby="view-edit-tab">
+        <h4>View/Edit Medical Notes</h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Medical Notes</th>
+                    <th>Visit Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="medicalNotesTableBody">
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var medicalNote in Model)
+                    {
+                        <tr>
+                            <td>@medicalNote.MedicalHistoryId</td>
+                            <td><input type="text" class="clinical-notes-textbox form-control" value="@medicalNote.MedicalHistoryText" /></td>
+                            <td>@medicalNote.VisitDate</td>
+                            <td>
+                                <button class="btn btn-primary update-btn">Update</button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4">No medical history available.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="position-fixed top-0 end-0 p-3" id="toastContainer">
+            <div id="updateToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000" style="z-index: 1000;">
+                <div style="background-color:green;color:black" class="toast-header">
+                    <strong class="me-auto">Success</strong>
+                    <small>Just now</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    Medical history Updated.
+                </div>
+            </div>
+        </div>
+        <div class="position-fixed top-0 end-0 p-3" id="toastContainer">
+            <div id="deleteToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000" style="z-index: 1000;">
+                <div style="background-color:green;color:black" class="toast-header">
+                    <strong class="me-auto">Success</strong>
+                    <small>Just now</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    Selected Medical history deleted successfully.
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Check patient existence on leaving the patient ID input
+        $('#selectPatientid').on('blur', function () {
+            var patientId = $(this).val();
+
+            // Make an AJAX request to the controller action
+            $.ajax({
+                url: "/Patient/CheckPatientExistence",
+                method: "POST",
+                data: { patientId: patientId },
+                success: function (data) {
+                    if (data) {
+                        var div = document.getElementById('myTabContent');
+                        div.style.display = 'block';
+                        // getClinicalNotes(patientId);
+                        $("#patientGender").val(JSON.stringify(data).trim());
+                        $('#PatientidSubmit').val($('#selectPatientid').val());
+                        // Show a toast message if the patient exists
+                        var successToast = new bootstrap.Toast(document.getElementById("PatientFound"));
+                        successToast.show();
+                    } else {
+                        var div = document.getElementById('myTabContent');
+                        div.style.display = 'none';
+                        $('#selectPatientid').val('');
+                        // Show a toast message if the patient exists
+                        var successToast = new bootstrap.Toast(document.getElementById("PatientNotFound"));
+                        successToast.show();
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('#saveBtn').click(function (event) {
+            event.preventDefault();
+            var formData = $('#medicalTestForm').serialize();
+            $.ajax({
+                url: "/Patient/SubmitMedicalhistory",
+                method: "POST",
+                data: formData,
+                success: function (response) {
+                    // Handle success, e.g., show a success message
+                    var successToast = new bootstrap.Toast(document.getElementById("successToast"));
+                    successToast.show();
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        // Update button click event
+        $('#medicalNotesTableBody').on('click', '.update-btn', function () {
+            var row = $(this).closest('tr');
+            var clinicalNotesId = row.find('td:eq(0)').text();
+            var clinicalNotesText = row.find('.clinical-notes-textbox').val();
+
+            var url = '/Patient/UpdateMedicalNote?' +
+                'ClinicalNotesId=' + clinicalNotesId +
+                '&ClinicalNotesText=' + encodeURIComponent(clinicalNotesText);
+
+            // Append more parameters if needed in the URL
+
+            $.ajax({
+                url: url,
+                method: 'POST',
+                success: function (response) {
+                    getmedicalNotesWithoutid();
+                    var successToast = new bootstrap.Toast(document.getElementById("updateToast"));
+                    successToast.show();
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    });
+
+
+</script>
+<script>
+    $(document).ready(function () {
+        // delete button click event
+        $('#medicalNotesTableBody').on('click', '.delete-btn', function () {
+            var row = $(this).closest('tr');
+            var clinicalNotesId = row.find('td:eq(0)').text();
+            var PatientId = document.getElementById("selectPatientid").value;
+            var url = '/Patient/UpdateMedicalNote?' +
+                'ClinicalNotesId=' + clinicalNotesId +
+                '&ClinicalNotesText=' + encodeURIComponent('delete');
+
+            // Append more parameters if needed in the URL
+
+            $.ajax({
+                url: url,
+                method: 'POST',
+                success: function (response) {
+                    getClinicalNotes(PatientId);
+                    var successToast = new bootstrap.Toast(document.getElementById("deleteToast"));
+                    successToast.show();
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    });
+
+
+</script>
+<script>
+    function updateClinicalNotesTable(clinicalNotesList) {
+        var tableBody = document.getElementById('medicalNotesTableBody');
+
+        if (clinicalNotesList && clinicalNotesList.length > 0) {
+            // Clear existing table rows
+            tableBody.innerHTML = '';
+
+            // Populate table with new data
+            clinicalNotesList.forEach(function (clinicalNote) {
+                var row = document.createElement('tr');
+
+                // Create table cells and populate data
+                var clinicalNotesIdCell = document.createElement('td');
+                clinicalNotesIdCell.textContent = clinicalNote.MedicalHistoryId;
+                row.appendChild(clinicalNotesIdCell);
+
+                var clinicalNotesTextCell = document.createElement('td');
+                var clinicalNotesTextarea = document.createElement('textarea');
+                clinicalNotesTextarea.setAttribute('class', 'clinical-notes-textbox form-control');
+                clinicalNotesTextarea.value = clinicalNote.MedicalHistoryText;
+                clinicalNotesTextCell.appendChild(clinicalNotesTextarea);
+                row.appendChild(clinicalNotesTextCell);
+
+                var visitDateCell = document.createElement('td');
+                visitDateCell.textContent = clinicalNote.VisitDate;
+                row.appendChild(visitDateCell);
+
+                var actionCell = document.createElement('td');
+                var updateBtn = document.createElement('button');
+                updateBtn.textContent = 'Update';
+                updateBtn.classList.add('btn', 'btn-primary', 'update-btn');
+                actionCell.appendChild(updateBtn);
+
+                var deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'Delete'; // Add text for delete button
+                deleteBtn.classList.add('btn', 'btn-danger', 'delete-btn'); // Add classes for styling
+                actionCell.appendChild(deleteBtn); // Append delete button to the action cell
+
+                row.appendChild(actionCell);
+
+                tableBody.appendChild(row);
+            });
+        } else {
+            // Show message when no clinical notes available
+            tableBody.innerHTML = '<tr><td colspan="4">No medical history available</td></tr>';
+        }
+    }
+</script>
+<script>
+    function getClinicalNotes(patientId) {
+        var xhr = new XMLHttpRequest();
+
+        // Define the endpoint URL, assuming it's '/Patient/GetClinicalNotes'
+        var url = '/Patient/GetMedicalHistory?PatientId=' + patientId;
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    // Request successful, handle the response
+                    var clinicalNotes = JSON.parse(xhr.responseText);
+                    var mappedData = clinicalNotes.map(item => {
+                        return {
+                            MedicalHistoryId: item.medicalHistoryId,
+                            PatientId: item.patientId,
+                            MedicalHistoryText: item.medicalHistoryText,
+                            VisitDate: item.visitDate
+                        };
+                    });
+                    updateClinicalNotesTable(mappedData);
+                } else {
+                    // Request failed, handle errors
+                    console.error('Request failed with status:', xhr.status);
+                }
+            }
+        };
+
+        xhr.open('GET', url, true);
+        xhr.send();
+    }
+</script>
+
+<script>
+    function getmedicalNotesWithoutid() {
+        var xhr = new XMLHttpRequest();
+        var patientId = document.getElementById("selectPatientid").value;
+        // Define the endpoint URL, assuming it's '/Patient/GetClinicalNotes'
+        var url = '/Patient/GetMedicalHistory?PatientId=' + patientId;
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    // Request successful, handle the response
+                    var clinicalNotes = JSON.parse(xhr.responseText);
+                    console.log(clinicalNotes);
+                    var mappedData = clinicalNotes.map(item => {
+                        return {
+                            MedicalHistoryId: item.medicalHistoryId,
+                            PatientId: item.patientId,
+                            MedicalHistoryText: item.medicalHistoryText,
+                            VisitDate: item.visitDate
+                        };
+                    });
+                    console.log(mappedData);
+                    updateClinicalNotesTable(mappedData);
+                } else {
+                    // Request failed, handle errors
+                    console.error('Request failed with status:', xhr.status);
+                }
+            }
+        };
+
+        xhr.open('GET', url, true);
+        xhr.send();
+    }
+</script>

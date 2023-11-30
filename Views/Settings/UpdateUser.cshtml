@@ -1,0 +1,127 @@
+﻿@model List<User>
+
+<p>
+    <h2>Update User</h2>
+</p>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>User Name</th>
+            <th>Phone Number</th>
+            <th>Role</th>
+            <th>isActivated</th>
+            <th>isDeleted</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr id="row_@user.Id">
+                <td>@user.Id</td>
+                <td>@user.UserName</td>
+                <td>@user.PhoneNumber</td>
+                <td>
+                    <select id="roleDropdown_@user.Id" class="form-control">
+                        @{
+                            var roles = ViewBag.Roles as List<Role>;
+                            if (roles != null)
+                            {
+                                foreach (var role in roles)
+                                {
+                                    if (role.RoleId == user.RoleId)
+                                    {
+                                        <option value="@role.RoleId" selected>@role.RoleName</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@role.RoleId">@role.RoleName</option>
+                                    }
+                                }
+                            }
+                        }
+                    </select>
+
+                </td>
+                <td>
+                    <select id="isActivatedDropdown_@user.Id" class="form-control">
+                        @if (user.IsActivated)
+                        {
+                            <option value="true" selected>True</option>
+                            <option value="false">False</option>
+                        }
+                        else
+                        {
+                            <option value="true">True</option>
+                            <option value="false" selected>False</option>
+                        }
+                    </select>
+                </td>
+                <td>
+                    <select id="isDeletedDropdown_@user.Id" class="form-control">
+                        @if (user.IsDeleted)
+                        {
+                            <option value="true" selected>True</option>
+                            <option value="false">False</option>
+                        }
+                        else
+                        {
+                            <option value="true">True</option>
+                            <option value="false" selected>False</option>
+                        }
+                    </select>
+                </td>
+
+
+                <td>
+                    <button type="button" class="btn btn-success" onclick="updateUser('@user.Id')">Update</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts
+    {
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    <script>
+        // Define showToast function
+        function showToast(type, message) {
+            toastr[type](message);
+        }
+
+        // Define other functions
+        function updateUser(userId) {
+            var roleId = $("#roleDropdown_" + userId).val();
+            var isActivated = $("#isActivatedDropdown_" + userId).val();
+            var isDeleted = $("#isDeletedDropdown_" + userId).val();
+            sendAction(userId, roleId, isActivated, isDeleted);
+        }
+
+        function sendAction(userId, roleId, isActivated, isDeleted) {
+            $.ajax({
+                type: "POST",
+                url: "/Settings/UpdateUserStatus",
+                data: { Id: userId, RoleId: roleId, IsActivated: isActivated, IsDeleted: isDeleted, action : 3 },
+                success: function (result) {
+                    if (result.success) {
+                        // Show a success toast message
+                        showToast("success", result.message);
+
+                    } else {
+                        // Show an error toast message
+                        showToast("error", result.message);
+                    }
+                },
+                error: function (error) {
+                    // Handle errors, if needed
+                    showToast("error", "Failed to update user status");
+                }
+            });
+        }
+    </script>
+}
+

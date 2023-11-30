@@ -58,20 +58,22 @@ public class UserRepository
         // Execute the query and return a User object or null if not found
         loginViewModel = dbConnection.QueryFirstOrDefault<LoginViewModel>(query, new { Username = username });
 
-        // Fetch menu items from the database
-        List<MenuViewModel> menuItems = InvokemenuItems();
+        if (loginViewModel !=null)
+        {
+            // Fetch menu items from the database
+            List<MenuViewModel> menuItems = InvokemenuItems(loginViewModel.RoleName);
 
-        // Store menu items in session
-        var menuItemsJson = JsonSerializer.Serialize(menuItems);
-        _contextAccessor.HttpContext.Session.SetString("MenuItems", menuItemsJson);
-        _contextAccessor.HttpContext.Session.SetString("RoleName", loginViewModel.RoleName);
-        _contextAccessor.HttpContext.Session.SetString("RoleId", Convert.ToString(loginViewModel.RoleId));
-        _contextAccessor.HttpContext.Session.SetString("UserName", loginViewModel.UserName);
-
+            // Store menu items in session
+            var menuItemsJson = JsonSerializer.Serialize(menuItems);
+            _contextAccessor.HttpContext.Session.SetString("MenuItems", menuItemsJson);
+            _contextAccessor.HttpContext.Session.SetString("RoleName", loginViewModel.RoleName);
+            _contextAccessor.HttpContext.Session.SetString("RoleId", Convert.ToString(loginViewModel.RoleId));
+            _contextAccessor.HttpContext.Session.SetString("UserName", loginViewModel.UserName);
+        }
         return loginViewModel;
     }
 
-    public List<MenuViewModel> InvokemenuItems()
+    public List<MenuViewModel> InvokemenuItems(string RoleName)
     {
         List<MenuViewModel> menuItems;
 
@@ -80,7 +82,7 @@ public class UserRepository
             connection.Open();
 
             var query = @"
-                SELECT
+            SELECT
                 PM.Text AS PrimaryMenuItemText,
                 PM.IconClass AS PrimaryMenuItemIconClass,
                 PM.Url AS PrimaryMenuItemUrl,
@@ -92,33 +94,17 @@ public class UserRepository
                 SecondaryMenuItems AS SM ON PM.Id = SM.PrimaryMenuItemId
             WHERE
                 PM.IsActive = 1 AND
-                (SM.IsActive = 1 OR SM.IsActive IS NULL)
+                (SM.IsActive = 1 OR SM.IsActive IS NULL) AND
+                PM.roleaccess LIKE @RoleName
             ORDER BY
                 PM.Ordering, SM.Ordering;
+        ";
 
-            ";
-
-            menuItems = connection.Query<MenuViewModel>(query).ToList();
+            // Use Dapper's Query method with parameters
+            menuItems = connection.Query<MenuViewModel>(query, new { RoleName = "%" + RoleName + "%" }).ToList();
         }
 
         return menuItems;
-    }
-
-    public List<Role> GetRolesFromDatabase()
-    {
-        List<Role> roles;
-
-        using (var connection = new SqlConnection(connectionString))
-        {
-            connection.Open();
-
-            var query = @"
-                select * from Roles where IsActive=1;";
-
-            roles = connection.Query<Role>(query).ToList();
-        }
-
-        return roles;
     }
 
     public List<object> ValidateClinicalId(int ClinicalId)
@@ -132,7 +118,7 @@ public class UserRepository
             var query = @"
                select * from ClinicalInfo
             WHERE
-               and ClinicalId = @ClinicalId
+               ClinicalId = @ClinicalId
 
             ";
 

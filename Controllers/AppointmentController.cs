@@ -27,6 +27,22 @@ namespace ClinicalPharmaSystem.Controllers
             return View();
         }
 
+        public IActionResult ApproveRejectAppointment() 
+        {
+            return View();
+        }
+
+        public IActionResult AddClinicalHours()
+        {
+            return View();
+        }
+
+        public IActionResult UpdateClinicalHours()
+        {
+            var timeOption = repository.GetClinicalTimes();
+            return View(timeOption);
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(Appointment appointment)
@@ -62,6 +78,36 @@ namespace ClinicalPharmaSystem.Controllers
                 return Content("Not Available"); // You can customize this message
             }
         }
-        
+
+        [HttpPost]
+        public IActionResult UpdateClinicalTime([FromBody] AppointmentTimeOption updatedTimeOption)
+            {
+            int status = 0;
+            status = repository.UpdateClinicalTime(updatedTimeOption);
+            if(status==1)
+            {
+                return Json(new { status = 1 });
+            }
+            return Json(new { status = 0 });
+        }
+
+        [HttpPost]
+        public IActionResult AddAppointmentTime([FromBody] Dictionary<string, string> formData)
+        {
+            string hours = formData["Hours"];
+            string minutes = formData["Minutes"];
+            string ampm = formData["AMPM"];
+            var timeoptions = $"{hours}:{minutes} {ampm}";
+
+            int status = 0;
+            status = repository.SaveAppointmentTimeOption(timeoptions);
+
+            if (status != 0)
+            {
+                return Json(new { status = 1 });
+            }
+            return Json(new { status = 0 });
+        }
+
     }
 }

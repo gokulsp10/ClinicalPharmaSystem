@@ -1,5 +1,6 @@
 ﻿using ClinicalPharmaSystem.DataContext;
 using ClinicalPharmaSystem.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Reflection;
@@ -15,6 +16,7 @@ namespace ClinicalPharmaSystem.Controllers
             this.medicalTestRepository = medicalTestRepository;
         }
 
+        [Authorize(Roles = "Doctor,Admin,Lab Technician,Pharmacy")]
         public IActionResult AddDisease()
         {
             return View();
@@ -60,11 +62,13 @@ namespace ClinicalPharmaSystem.Controllers
             return Json(results);
         }
 
+        [Authorize(Roles = "Doctor,Admin,Lab Technician,Pharmacy")]
         public IActionResult AddMedicalTest()
         {
             return View();
         }
 
+        [Authorize(Roles = "Doctor,Admin,Lab Technician,Pharmacy")]
         public IActionResult ViewEditDisease()
         {
             return View();
@@ -85,6 +89,7 @@ namespace ClinicalPharmaSystem.Controllers
             }
         }
 
+        [Authorize(Roles = "Doctor,Admin,Lab Technician,Pharmacy")]
         public IActionResult ViewMedicalTests()
         {
             return View();

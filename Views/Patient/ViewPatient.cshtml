@@ -98,6 +98,7 @@
             <table class="table table-bordered" id="patientDiseaseTable">
                 <thead>
                     <tr>
+                        <th>Disease</th>
                         <th>Test Name</th>
                         <th>Value</th>
                         <th>Status</th>
@@ -110,10 +111,18 @@
                         foreach (var patient in Model)
                         {
                             <tr>
-                                <td>@patient.TestName</td>
-                                <td>@patient.Value</td>
-                                <td>@patient.Status</td>
-                                <td>@patient.TestTakenDate</td>
+                                @if (string.IsNullOrEmpty(patient.DiseasesTestName)) // Check for null or empty TestName
+                                {
+                                    <td colspan="4">No records found in this table</td>
+                                }
+                                else
+                                {
+                                    <td>@patient.DiseaseName</td>
+                                    <td>@patient.DiseasesTestName</td>
+                                    <td>@patient.Testvalue</td>
+                                    <td>@patient.Status</td>
+                                    <td>@patient.TestTakenDate</td>
+                                }
                             </tr>
                         }
                     }
@@ -133,8 +142,16 @@
                         foreach (var patient in Model)
                         {
                             <tr>
-                                <td>Test 1</td>
-                                <td>@patient.TestTakenDate</td>
+                                @if (string.IsNullOrEmpty(patient.ClinicalNotesText)) // Check for null or empty TestName
+                                {
+                                    <td colspan="4">No records found in this table</td>
+                                }
+                                else
+                                {
+
+                                    <td>@patient.ClinicalNotesText</td>
+                                    <td>@patient.ClinicalNotesVisitDate</td>
+                                }
                             </tr>
                         }
                     }
@@ -144,24 +161,36 @@
             <table class="table table-bordered" id="patientMedicationNotes">
                 <thead>
                     <tr>
-                        <th>Medication Notes</th>
+                        <th>Medication History</th>
                         <th>Entered  Date</th>
                     </tr>
                 </thead>
                 <tbody>
                     @if (Model.Any()) // Check if the Model is not empty
                     {
+
                         foreach (var patient in Model)
                         {
                             <tr>
-                                <td>Paracetomol</td>
-                                <td>@patient.TestTakenDate</td>
+                                @if (string.IsNullOrEmpty(patient.MedicalHistoryText)) // Check for null or empty TestName
+                                {
+                                    <td colspan="4">No records found in this table</td>
+                                }
+                                else
+                                {
+                                    <td>
+                                        <textarea class="form-control" rows="4" readonly>@patient.MedicalHistoryText</textarea>
+                                    </td>
+
+                                    <td>@patient.MedicalHistoryVisitDate</td>
+                                }
+                                
                             </tr>
                         }
                     }
                 </tbody>
             </table>
-    <div style="margin-bottom: 50px;">
+    <div style="margin-bottom: 50px;display:none">
         <button type="button" class="btn btn-primary" id="addRow">Add Row</button>
         <button type="button" class="btn btn-success" id="saveButton">Save</button>
     </div>

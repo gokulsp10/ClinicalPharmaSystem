@@ -17,6 +17,8 @@ namespace ClinicalPharmaSystem.Controllers
         {
             return View();
         }
+
+        [Authorize(Roles = "Doctor,Admin")]
         public IActionResult Patient()
         {
             return View();

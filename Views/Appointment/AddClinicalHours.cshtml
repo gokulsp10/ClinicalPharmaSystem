@@ -1,0 +1,105 @@
+﻿@model AppointmentTimeOption
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create New Appointment Time Option</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Create New Appointment Time Option</h1>
+
+        <form asp-controller="Appointment" asp-action="AddAppointmentTime" method="post" id="appointmentForm">
+            <div class="form-group">
+                <label for="time">Time:</label>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <select class="form-control" id="hours" name="Hours" required>
+                            @for (int i = 1; i <= 12; i++)
+                            {
+                                <option value="@i">@i</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-sm-4">
+                        <select class="form-control" id="minutes" name="Minutes" required>
+                            <option value="00">00</option>
+                            <option value="30">30</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-4">
+                        <select class="form-control" id="ampm" name="AMPM" required>
+                            <option value="AM">AM</option>
+                            <option value="PM">PM</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+    <div class="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
+        <div class="toast" id="myToast" data-delay="3000">
+            <div class="toast-header bg-primary text-white">
+                <strong class="mr-auto">Notification</strong>
+                <button type="button" id="closeToast" class="ml-2 mb-1 close" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="toast-body">
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(function () {
+            $('#appointmentForm').submit(function (event) {
+                event.preventDefault();
+
+                var form = $(this);
+                var url = form.attr('action');
+
+                var data = {
+                    Hours: $('#hours').val(),
+                    Minutes: $('#minutes').val(),
+                    AMPM: $('#ampm').val()
+                };
+
+                $.ajax({
+                    url: url,
+                    type: "POST",
+                    data: JSON.stringify(data),
+                    contentType: "application/json",
+                    success: function (response) {
+                        if (response.status === 1) {
+                            showToastMessage("Clinical hours added successfully");
+                        } else {
+                            showToastMessage("Failed to add clinical hours");
+                        }
+                    },
+                    error: function () {
+                        showToastMessage("Error occurred while adding clinical hours");
+                    }
+                });
+            });
+        });
+
+
+        function showToastMessage(message) {
+            var myToast = new bootstrap.Toast(document.getElementById('myToast'));
+            $('.toast-body').text(message);
+            myToast.show();
+            setTimeout(function () {
+                myToast.hide();
+            }, 3000);
+        }
+
+        $('#closeToast').click(function () {
+            var myToast = new bootstrap.Toast(document.getElementById('myToast'));
+            myToast.hide();
+        });
+
+    </script>
+</body>
+</html>

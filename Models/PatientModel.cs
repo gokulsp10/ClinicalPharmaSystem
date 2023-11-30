@@ -19,10 +19,30 @@
             // Set a default date, for example, today's date
             Date = DateTime.Now;
         }
-        public string TestName { get; set; }
-        public string Value { get; set; }
+
+        public string DiseaseName { get; set; }
+        public string DiseasesTestName { get; set; }
+        public string Testvalue { get; set; }
         public string Status { get; set; }
         public DateTime TestTakenDate { get; set; }
+
+        public string ClinicalNotesText { get; set; }
+
+        public DateTime ClinicalNotesVisitDate { get; set; }
+
+        public string MedicalHistoryText { get; set; }
+
+        public DateTime MedicalHistoryVisitDate { get; set; }
+
+    }
+
+    public class PatientHealthData
+    {
+        public string? BloodPressure { get; set; }
+        public string? PulseRate { get; set; }
+        public string? Weight { get; set; }
+        public string? SpO2 { get; set; }
+
     }
 
 }

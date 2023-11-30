@@ -1,13 +1,12 @@
-﻿namespace ClinicalPharmaSystem.Models
+﻿namespace ClinicalPharmaSystem.Models.PatientView
 {
-    public class PatientHealthDataModel
+    public class PatientHealthData
     {
-        public int PatientId { get; set; }
-        public DateTime VisitDate { get; set; }
+        public string? PatientId { get; set; }
+        public DateTime Date { get; set; }
         public string? BloodPressure { get; set; }
         public string? PulseRate { get; set; }
         public string? Weight { get; set; }
         public string? SpO2 { get; set; }
     }
-
 }
