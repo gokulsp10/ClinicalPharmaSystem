@@ -1,0 +1,1163 @@
+﻿@using ClinicalPharmaSystem.Models.Pharmacy;
+@model List<Medicine>
+<h2>Medicines</h2>
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="add-tab" data-bs-toggle="tab" data-bs-target="#add" type="button" role="tab" aria-controls="add" aria-selected="true">Add Medicine Category</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="view-edit-tab" data-bs-toggle="tab" data-bs-target="#view-edit" type="button" role="tab" aria-controls="view-edit" aria-selected="false">View/Edit Medicine Category</button>
+    </li>
+</ul>
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="add" role="tabpanel" aria-labelledby="add-tab">
+        <!-- Add CategoryName Form -->
+        <h1>Add Medicine</h1>
+        <!-- Bootstrap CSS -->
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+        <form id="MedicineForm">
+            <div class="row">
+                <label for="SupplierID">Supplier:</label>
+                <div class="form-group col-md-5"> <input type="text" required autocomplete="off" id="selectSupplierID" class="form-control" /> </div>
+                <div class="form-group col-md-5"> <input style="display:none" type="text" id="SupplierID" disabled class="form-control" /> </div>
+            </div>
+            <div class="row">
+                <label for="CategoryID">Category:</label>
+                <div class="form-group col-md-5"> <input type="text" required autocomplete="off" id="selectCategoryID" class="form-control" /> </div>
+                <div class="form-group col-md-5"> <input style="display:none" type="text" id="CategoryID" disabled class="form-control" /> </div>
+            </div>
+            <div class="form-group">
+                <label for="MedicineName">Medicine Name:</label>
+                <input type="text" style="width:400px" class="form-control" id="MedicineName" name="MedicineName" required>
+            </div>
+            <div class="form-group">
+                <label for="NumberOfStrips">Number of Strips / Pack:</label>
+                <input type="text" style="width:400px" class="form-control" id="NumberOfStrips" name="NumberOfStrips" required>
+            </div>
+            <div class="form-group">
+                <label for="TabletCountPerStrip">Number of Units Per Strip:</label>
+                <input type="text" style="width:400px" class="form-control" id="TabletCountPerStrip" name="TabletCountPerStrip" required>
+            </div>
+            <div class="form-group">
+                <label for="PricePerStrip">Price / For Per Strip:</label>
+                <input type="text" style="width:400px" class="form-control" id="PricePerStrip" name="PricePerStrip" required>
+            </div>
+            <div class="form-group">
+                <label for="Container">Storage Container:</label>
+                <input type="text" style="width:400px" class="form-control" id="Container" name="Container" required>
+            </div>
+            <div class="form-group">
+                <label for="RouteofIntake">Route of Intake:</label>
+                <input type="text" style="width:400px" class="form-control" id="RouteofIntake" name="RouteofIntake" required>
+            </div>
+            <div class="form-group">
+                <label for="Strengths">Strengths:</label>
+                <input type="text" style="width:400px" class="form-control" id="Strengths" name="Strengths" required>
+            </div>
+            <div class="form-group">
+                <label for="ManufacturingDate">Manufacturing Date:</label>
+                <input type="text" required id="ManufacturingDate" name="ManufacturingDate" class="form-control" style="width: 150px;">
+            </div>
+            <div class="form-group">
+                <label for="ExpiryDate">Expiry Date:</label>
+                <input type="text" required id="ExpiryDate" name="ExpiryDate" class="form-control" style="width: 150px;">
+            </div>
+            <button type="submit" class="btn btn-primary" onclick="submitForm()">Submit</button>
+        </form>
+
+        <div class="position-fixed bottom-0 end-0 p-3" id="toastContainer">
+            <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
+                <div class="toast-header">
+                    <strong class="me-auto">Success</strong>
+                    <small>Just now</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    Medicine added successfully!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane fade" id="view-edit" role="tabpanel" aria-labelledby="view-edit-tab">
+        <!-- View/Edit Medicine Content -->
+        <div class="highlighted-border">
+        <div class="container mt-4">
+            <h2>Quick Medicine Search</h2>
+            <div class="row">
+                    <div class="col-md-4">
+                        <label for="MedicineID">Medicine Name:</label>
+                        <div class="form-group">
+                            <input type="text" required autocomplete="off" id="selectMedicineNamesearch" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <input style="display:none" type="text" id="MedicineNamesearch" disabled class="form-control" />
+                        </div>
+                    </div>
+                <div class="col-md-4">
+                    <label for="selectSupplierID">Supplier Name:</label>
+                    <div class="form-group">
+                            <input type="text" required autocomplete="off" id="selectSupplierIDsearch" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                            <input style="display:none" type="text" id="SupplierIDsearch" disabled class="form-control" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label for="selectCategoryID">Category Name:</label>
+                    <div class="form-group">
+                            <input type="text" required autocomplete="off" id="selectCategoryIDsearch" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                            <input style="display:none" type="text" id="CategoryIDsearch" disabled class="form-control" />
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="submitmedicineSearch()">Search</button>
+                <button class="btn btn-primary" onclick="clearSearch()">Clear</button>
+        </div>
+        </div><br />
+        <div class="highlighted-border">
+            <h3>Medicine List</h3>
+            <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Medicine Id</th>
+                    <th>Supplier</th>
+                    <th>Category</th>
+                    <th>Medicine Name</th>
+                </tr>
+            </thead>
+            <tbody id="MedicineTableBody">
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var supplier in Model)
+                    {
+                        <tr>
+                            <td>@supplier.MedicineID</td>
+                            <td>@supplier.SupplierName</td>
+                            <td>@supplier.CategoryName</td>
+                            <td>@supplier.MedicineName</td>
+                            <td>
+                                <button class="btn btn-primary update-btn">Select</button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7">No Medicine available</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+            </div>
+        </div><br />
+        <div class="highlighted-border">
+            <h3>Update medical Details</h3>
+        <form id="medicineUpdateForm">
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="selectSupplierID">Supplier Name:</label>
+                    <div class="form-group">
+                        <input type="text" required autocomplete="off" id="selectSupplierIDUpdate" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <input style="display:none" type="text" id="SupplierIDUpdate" disabled class="form-control" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label for="selectCategoryID">Category Name:</label>
+                    <div class="form-group">
+                        <input type="text" required autocomplete="off" id="selectCategoryIDUpdate" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <input style="display:none" type="text" id="CategoryIDUpdate" disabled class="form-control" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label for="MedicineName">Medicine Name:</label>
+                    <div class="form-group">
+                            <input type="text" required autocomplete="off" name="MedicineName" id="MedicineNameUpdate" class="form-control" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                        <label for="NumberOfStrips">Number Of Strips / Pack:</label>
+                    <div class="form-group">
+                        <input type="text" required autocomplete="off" name="NumberOfStrips" id="NumberOfStripsUpdate" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                        <label for="NumberOfTablets">Number Of Units:</label>
+                    <div class="form-group">
+                        <input type="text" id="NumberOfTabletsUpdate" name="NumberOfTablets" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                        <label for="PricePerStrip">Price / For Per Strip:</label>
+                    <div class="form-group">
+                        <input type="text" id="PricePerStripUpdate" name="PricePerStrip" class="form-control" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="RouteOfIntake">Route Of Intake:</label>
+                    <div class="form-group">
+                        <input type="text" required autocomplete="off" name="RouteOfIntake" id="RouteOfIntakeUpdate" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label for="Strengths">Strengths:</label>
+                    <div class="form-group">
+                        <input type="text" id="StrengthsUpdate" name="Strengths" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                        <label for="Container">Container:</label>
+                    <div class="form-group">
+                            <input type="text" id="ContainerUpdate" name="Container" class="form-control" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                    <div class="col-md-4">
+                        <label for="TabletCountPerStrip">Count Per Strip:</label>
+                        <div class="form-group">
+                            <input type="text" id="TabletCountPerStripUpdate" name="TabletCountPerStrip" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="ManufacturingDate">Manufacturing Date:</label>
+                        <div class="form-group">
+                            <input type="date" id="ManufacturingDateUpdate" name="ManufacturingDate" class="form-control" />
+                        </div>
+                    </div>
+                <div class="col-md-4">
+                    <label for="ExpiryDate">Expiry Date:</label>
+                    <div class="form-group">
+                            <input type="date" required autocomplete="off" name="ExpiryDate" id="ExpiryDateUpdate" class="form-control" />
+                    </div>
+                </div>
+            </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <input style="display:none" type="text" id="MedicineIDUpdate" disabled class="form-control" />
+                        <div class="form-group">
+                            <button type="button" style="margin-top: 32px;" class="btn btn-primary" onclick="updateMedicalData('update')">Update</button>
+                            <button type="button" style="margin-top: 32px;" class="btn btn-primary" onclick="updateMedicalData('delete')">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="position-fixed top-0 end-0 p-3" id="toastContainer">
+                <div id="updateSelectToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000" style="z-index: 1000;">
+                    <div style="background-color:green;color:black" class="toast-header">
+                        <strong class="me-auto">Warning</strong>
+                        <small>Just now</small>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body">
+                        Failed to update. Please enter valid data to update.
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="position-fixed top-0 end-0 p-3" id="toastContainer">
+            <div id="updatedeleteToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000" style="z-index: 1000;">
+                <div style="background-color:green;color:black" class="toast-header">
+                    <strong class="me-auto">Success</strong>
+                    <small>Just now</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    Medicine data deleted successfully.
+                </div>
+            </div>
+        </div>
+        <div class="position-fixed top-0 end-0 p-3" id="toastContainer">
+            <div id="updateSelectSuccessToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000" style="z-index: 1000;">
+                <div style="background-color:green;color:black" class="toast-header">
+                    <strong class="me-auto">Success</strong>
+                    <small>Just now</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    Medicine Details updated successfully.
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <div class="position-fixed top-0 end-0 p-3" id="toastContainer">
+            <div id="medicineSearchToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000" style="z-index: 1000;">
+                <div style="background-color:green;color:black" class="toast-header">
+                    <strong class="me-auto">Information</strong>
+                    <small>Just now</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    No Medicines found in this search.
+                </div>
+            </div>
+        </div>
+    </div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<style>
+    .highlighted-border {
+        border: 2px solid #3498db; /* Professional blue color */
+        padding: 10px; /* Optional padding for content inside the div */
+        /* Additional styling if needed */
+    }
+
+    .table-container {
+        max-height: 400px;
+        overflow: auto;
+    }
+
+    /* Optional: Force table-layout and set fixed widths for columns */
+    .table {
+        width: 100%; /* Use the full width of the container */
+        table-layout: fixed;
+    }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<!-- jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+<script>
+
+        function clearSearch(){
+        document.getElementById('MedicineIDUpdate').value = '';
+        document.getElementById('selectSupplierIDUpdate').value = '';
+        document.getElementById('SupplierIDUpdate').value = '';
+        document.getElementById('selectCategoryIDUpdate').value = '';
+        document.getElementById('CategoryIDUpdate').value = '';
+        document.getElementById('MedicineNameUpdate').value = '';
+        document.getElementById('NumberOfStripsUpdate').value = '';
+        document.getElementById('PricePerStripUpdate').value = '';
+        document.getElementById('NumberOfTabletsUpdate').value = '';
+        document.getElementById('RouteOfIntakeUpdate').value = '';
+        document.getElementById('StrengthsUpdate').value = '';
+        document.getElementById('ManufacturingDateUpdate').value = '';
+        document.getElementById('ExpiryDateUpdate').value = '';
+        var tableBody = document.getElementById('MedicineTableBody');
+        tableBody.innerHTML = ''; // Clear existing table data
+        }
+
+    function submitmedicineSearch() {
+        var supplierName = document.getElementById('selectSupplierIDsearch').value;
+        var categoryName = document.getElementById('selectCategoryIDsearch').value;
+        var medicineName = document.getElementById('selectMedicineNamesearch').value;
+        console.log(supplierName);
+        console.log(categoryName);
+        console.log(medicineName);
+        // Create an object with form data
+        var formData = {
+            SupplierID: supplierName,
+            CategoryID: categoryName,
+            MedicineName: medicineName
+        };
+        var url = '/Pharmacy/SearchMedicine?' +
+            'SupplierID=' + supplierName +
+            '&CategoryID=' + categoryName +
+            '&MedicineName=' + medicineName;
+        $.ajax({
+            url: url,
+            type: 'GET',
+            contentType: 'application/json',
+            data: JSON.stringify(formData),
+            success: function (data) {
+                updateMedicineTable(data);
+                if (data && data.length == 0) {
+                    var successToast = new bootstrap.Toast(document.getElementById("medicineSearchToast"));
+                    successToast.show();
+                }
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+
+    function updateMedicineTable(data) {
+        document.getElementById('MedicineIDUpdate').value = '';
+        document.getElementById('selectSupplierIDUpdate').value ='';
+        document.getElementById('SupplierIDUpdate').value = '';
+        document.getElementById('selectCategoryIDUpdate').value = '';
+        document.getElementById('CategoryIDUpdate').value = '';
+        document.getElementById('MedicineNameUpdate').value = '';
+        document.getElementById('NumberOfStripsUpdate').value = '';
+        document.getElementById('PricePerStripUpdate').value = '';
+        document.getElementById('NumberOfTabletsUpdate').value = '';
+        document.getElementById('RouteOfIntakeUpdate').value = '';
+        document.getElementById('StrengthsUpdate').value = '';
+        document.getElementById('ManufacturingDateUpdate').value = '';
+        document.getElementById('ExpiryDateUpdate').value = '';
+        var tableBody = document.getElementById('MedicineTableBody');
+        tableBody.innerHTML = ''; // Clear existing table data
+
+        // Loop through the received data and populate the table
+        data.forEach(function (medicine) {
+            var row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${medicine.medicineID}</td>
+                <td>${medicine.supplierName}</td>
+                <td>${medicine.categoryName}</td>
+                <td>${medicine.medicineName}</td>
+                    <td><button class="select-btn btn btn-primary" data-medicine-id="${medicine.medicineID}">Select</button></td>
+            `;
+            tableBody.appendChild(row);
+        });
+
+        // Attach click event listeners to the select buttons
+        var selectButtons = document.querySelectorAll('.select-btn');
+        selectButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                var medicineID = this.getAttribute('data-medicine-id');
+                // Call a function to send medicineID to the controller action method
+                sendMedicineID(medicineID);
+            });
+        });
+    }
+
+    function sendMedicineID(medicineID) {
+        fetch('/Pharmacy/SelectMedicine?medicineID=' + medicineID)
+            .then(response => response.json()) // Convert response to JSON
+            .then(data => {
+                populateForm(data);
+            })
+            .catch(error => {
+                // Handle error if needed 
+            });
+    }
+
+</script>
+<script>
+    flatpickr("#ManufacturingDate", {
+        dateFormat: "d-m-Y", maxDate: 'today',
+    });
+    flatpickr("#ExpiryDate", {
+        dateFormat: "d-m-Y", // Define the date format as per your requirement
+        // You can add more configurations/options as needed
+    });
+    flatpickr("#ManufacturingDateUpdate", {
+        dateFormat: "d-m-Y", maxDate: 'today',
+    });
+    flatpickr("#ExpiryDateUpdate", {
+        dateFormat: "d-m-Y", // Define the date format as per your requirement
+        // You can add more configurations/options as needed
+    });
+</script>
+<script>
+    var map = {}; // Declare map globally
+
+    $("#selectSupplierID").typeahead({
+        minLength: 1,
+        source: function (request, response) {
+            $.ajax({
+                url: "/Pharmacy/GetSupplierDataForEntry",
+                data: {
+                    "term": request
+                },
+                type: "GET",
+                contentType: "json",
+                success: function (data) {
+                    var items = [];
+
+                    if (Array.isArray(data)) {
+                        // Extract disease names from the objects and create an array of strings
+                        items = data.map(function (item) {
+                            return item.supplierName;
+                        });
+
+                        map = {}; // Update the map for array responses
+                        data.forEach(function (item) {
+                            var id = item.supplierID;
+                            var name = item.supplierName;
+                            console.log(name);
+                            // $("#selectedDiseaseName").val(name);
+                            // $("#selectedDiseaseId").val(id);
+                            map[name] = {
+                                id: id,
+                                name: name
+                            };
+                        });
+                    } else if (typeof data === 'object') {
+                        // Handle a single object
+                        items.push(data.supplierName);
+                        map = {}; // Update the map for single object response
+                        var id = data.supplierID;
+                        var name = data.supplierName;
+                        console.log(name);
+                        // $("#selectedDiseaseName").val(name);
+                        // $("#selectedDiseaseId").val(id);
+                        map[name] = {
+                            id: id,
+                            name: name
+                        };
+                    }
+
+                    response(items);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        },
+        updater: function (item) {
+            if (map[item]) {
+                // Check if the item exists in the map
+                $("#SupplierID").val(map[item].id);
+            }
+            return item;
+        }
+    });
+
+</script>
+<script>
+    var map = {}; // Declare map globally
+
+    $("#selectSupplierIDsearch").typeahead({
+        minLength: 1,
+        source: function (request, response) {
+            document.getElementById('SupplierIDsearch').value = '';
+            $.ajax({
+                url: "/Pharmacy/GetSupplierDataForEntry",
+                data: {
+                    "term": request
+                },
+                type: "GET",
+                contentType: "json",
+                success: function (data) {
+                    var items = [];
+
+                    if (Array.isArray(data)) {
+                        // Extract disease names from the objects and create an array of strings
+                        items = data.map(function (item) {
+                            return item.supplierName;
+                        });
+
+                        map = {}; // Update the map for array responses
+                        data.forEach(function (item) {
+                            var id = item.supplierID;
+                            var name = item.supplierName;
+                            console.log(name);
+                            // $("#selectedDiseaseName").val(name);
+                            // $("#selectedDiseaseId").val(id);
+                            map[name] = {
+                                id: id,
+                                name: name
+                            };
+                        });
+                    } else if (typeof data === 'object') {
+                        // Handle a single object
+                        items.push(data.supplierName);
+                        map = {}; // Update the map for single object response
+                        var id = data.supplierID;
+                        var name = data.supplierName;
+                        console.log(name);
+                        // $("#selectedDiseaseName").val(name);
+                        // $("#selectedDiseaseId").val(id);
+                        map[name] = {
+                            id: id,
+                            name: name
+                        };
+                    }
+
+                    response(items);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        },
+        updater: function (item) {
+            if (map[item]) {
+                // Check if the item exists in the map
+                $("#SupplierIDsearch").val(map[item].id);
+            }
+            return item;
+        }
+    });
+
+</script>
+<script>
+    var map = {}; // Declare map globally
+
+    $("#selectSupplierIDUpdate").typeahead({
+        minLength: 1,
+        source: function (request, response) {
+            document.getElementById('SupplierIDUpdate').value = '';
+            $.ajax({
+                url: "/Pharmacy/GetSupplierDataForEntry",
+                data: {
+                    "term": request
+                },
+                type: "GET",
+                contentType: "json",
+                success: function (data) {
+                    var items = [];
+
+                    if (Array.isArray(data)) {
+                        // Extract disease names from the objects and create an array of strings
+                        items = data.map(function (item) {
+                            return item.supplierName;
+                        });
+
+                        map = {}; // Update the map for array responses
+                        data.forEach(function (item) {
+                            var id = item.supplierID;
+                            var name = item.supplierName;
+                            console.log(name);
+                            // $("#selectedDiseaseName").val(name);
+                            // $("#selectedDiseaseId").val(id);
+                            map[name] = {
+                                id: id,
+                                name: name
+                            };
+                        });
+                    } else if (typeof data === 'object') {
+                        // Handle a single object
+                        items.push(data.supplierName);
+                        map = {}; // Update the map for single object response
+                        var id = data.supplierID;
+                        var name = data.supplierName;
+                        console.log(name);
+                        // $("#selectedDiseaseName").val(name);
+                        // $("#selectedDiseaseId").val(id);
+                        map[name] = {
+                            id: id,
+                            name: name
+                        };
+                    }
+                    response(items);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        },
+        updater: function (item) {
+            if (map[item]) {
+                // Check if the item exists in the map
+                $("#SupplierIDUpdate").val(map[item].id);
+            }
+            return item;
+        }
+    });
+
+</script>
+<script>
+    var map = {}; // Declare map globally
+
+    $("#selectCategoryID").typeahead({
+        minLength: 1,
+        source: function (request, response) {
+            $.ajax({
+                url: "/Pharmacy/GetMedicineCategoryForEntry",
+                data: {
+                    "term": request
+                },
+                type: "GET",
+                contentType: "json",
+                success: function (data) {
+                    var items = [];
+
+                    if (Array.isArray(data)) {
+                        // Extract disease names from the objects and create an array of strings
+                        items = data.map(function (item) {
+                            return item.categoryName;
+                        });
+
+                        map = {}; // Update the map for array responses
+                        data.forEach(function (item) {
+                            var id = item.categoryID;
+                            var name = item.categoryName;
+                            console.log(name);
+                            // $("#selectedDiseaseName").val(name);
+                            // $("#selectedDiseaseId").val(id);
+                            map[name] = {
+                                id: id,
+                                name: name
+                            };
+                        });
+                    } else if (typeof data === 'object') {
+                        // Handle a single object
+                        items.push(data.categoryName);
+                        map = {}; // Update the map for single object response
+                        var id = data.categoryID;
+                        var name = data.categoryName;
+                        console.log(name);
+                        // $("#selectedDiseaseName").val(name);
+                        // $("#selectedDiseaseId").val(id);
+                        map[name] = {
+                            id: id,
+                            name: name
+                        };
+                    }
+
+                    response(items);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        },
+        updater: function (item) {
+            if (map[item]) {
+                // Check if the item exists in the map
+                $("#CategoryID").val(map[item].id);
+            }
+            return item;
+        }
+    });
+
+</script>
+
+<script>
+    var map = {}; // Declare map globally
+
+    $("#selectCategoryIDsearch").typeahead({
+        minLength: 1,
+        source: function (request, response) {
+            document.getElementById('CategoryIDsearch').value = '';
+            $.ajax({
+                url: "/Pharmacy/GetMedicineCategoryForEntry",
+                data: {
+                    "term": request
+                },
+                type: "GET",
+                contentType: "json",
+                success: function (data) {
+                    var items = [];
+
+                    if (Array.isArray(data)) {
+                        // Extract disease names from the objects and create an array of strings
+                        items = data.map(function (item) {
+                            return item.categoryName;
+                        });
+
+                        map = {}; // Update the map for array responses
+                        data.forEach(function (item) {
+                            var id = item.categoryID;
+                            var name = item.categoryName;
+                            console.log(name);
+                            // $("#selectedDiseaseName").val(name);
+                            // $("#selectedDiseaseId").val(id);
+                            map[name] = {
+                                id: id,
+                                name: name
+                            };
+                        });
+                    } else if (typeof data === 'object') {
+                        // Handle a single object
+                        items.push(data.categoryName);
+                        map = {}; // Update the map for single object response
+                        var id = data.categoryID;
+                        var name = data.categoryName;
+                        console.log(name);
+                        // $("#selectedDiseaseName").val(name);
+                        // $("#selectedDiseaseId").val(id);
+                        map[name] = {
+                            id: id,
+                            name: name
+                        };
+                    }
+
+                    response(items);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        },
+        updater: function (item) {
+            if (map[item]) {
+                // Check if the item exists in the map
+                $("#CategoryIDsearch").val(map[item].id);
+            }
+            return item;
+        }
+    });
+
+</script>
+
+<script>
+    var map = {}; // Declare map globally
+
+    $("#selectCategoryIDUpdate").typeahead({
+        minLength: 1,
+        source: function (request, response) {
+            document.getElementById('CategoryIDUpdate').value = '';
+            $.ajax({
+                url: "/Pharmacy/GetMedicineCategoryForEntry",
+                data: {
+                    "term": request
+                },
+                type: "GET",
+                contentType: "json",
+                success: function (data) {
+                    var items = [];
+
+                    if (Array.isArray(data)) {
+                        // Extract disease names from the objects and create an array of strings
+                        items = data.map(function (item) {
+                            return item.categoryName;
+                        });
+
+                        map = {}; // Update the map for array responses
+                        data.forEach(function (item) {
+                            var id = item.categoryID;
+                            var name = item.categoryName;
+                            console.log(name);
+                            // $("#selectedDiseaseName").val(name);
+                            // $("#selectedDiseaseId").val(id);
+                            map[name] = {
+                                id: id,
+                                name: name
+                            };
+                        });
+                    } else if (typeof data === 'object') {
+                        // Handle a single object
+                        items.push(data.categoryName);
+                        map = {}; // Update the map for single object response
+                        var id = data.categoryID;
+                        var name = data.categoryName;
+                        console.log(name);
+                        // $("#selectedDiseaseName").val(name);
+                        // $("#selectedDiseaseId").val(id);
+                        map[name] = {
+                            id: id,
+                            name: name
+                        };
+                    }
+
+                    response(items);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        },
+        updater: function (item) {
+            if (map[item]) {
+                // Check if the item exists in the map  gokul
+                $("#CategoryIDUpdate").val(map[item].id);
+            }
+            return item;
+        }
+    });
+
+</script>
+
+<script>
+    var map = {}; // Declare map globally
+
+    $("#selectMedicineNamesearch").typeahead({
+        minLength: 1,
+        source: function (request, response) {
+            document.getElementById('MedicineNamesearch').value = '';
+            $.ajax({
+                url: "/Pharmacy/GetMedicineByName",
+                data: {
+                    "term": request
+                },
+                type: "GET",
+                contentType: "json",
+                success: function (data) {
+                    console.log(data);
+                    var items = [];
+
+                    if (Array.isArray(data)) {
+                        // Extract disease names from the objects and create an array of strings
+                        items = data.map(function (item) {
+                            return item.medicineName;
+                        });
+
+                        map = {}; // Update the map for array responses
+                        data.forEach(function (item) {
+                            var id = item.medicineID;
+                            var name = item.medicineName;
+                            // $("#selectedDiseaseName").val(name);
+                            // $("#selectedDiseaseId").val(id);
+                            map[name] = {
+                                id: id,
+                                name: name
+                            };
+                        });
+                    } else if (typeof data === 'object') {
+                        // Handle a single object
+                        items.push(data.medicineName);
+                        map = {}; // Update the map for single object response
+                        var id = data.medicineID;
+                        var name = data.medicineName;
+                        map[name] = {
+                            id: id,
+                            name: name
+                        };
+                    }
+
+                    response(items);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        },
+        updater: function (item) {
+            if (map[item]) {
+                $("#MedicineNamesearch").val(map[item].id);
+            }
+            return item;
+        }
+    });
+
+</script>
+
+<script>    
+    function submitForm() {
+        var form = document.getElementById('MedicineForm');
+        var formData = new FormData(form);
+        var SupplierID = document.getElementById('SupplierID').value;
+        var CategoryID = document.getElementById('CategoryID').value;
+        // Send the form data to the controller action method using AJAX
+        var url = '/Pharmacy/SaveMedicine?' +
+            'SupplierID=' + SupplierID +
+            '&CategoryID=' + CategoryID;
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                $('#successToast').toast('show');
+            },
+            error: function (error) {
+                // Handle error
+                console.log(error);
+            }
+        });
+    }
+</script>
+
+<script>
+    function GetMedicineCategory() {
+        var xhr = new XMLHttpRequest();
+
+        // Define the endpoint URL, assuming it's '/Patient/GetClinicalNotes'
+        var url = '/Pharmacy/GetMedicineCategory';
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    // Request successful, handle the response
+                    var clinicalNotes = JSON.parse(xhr.responseText);
+                    var mappedData = clinicalNotes.map(item => {
+                        return {
+                            CategoryID: item.categoryID,
+                            CategoryName: item.categoryName
+                        };
+                    });
+                    updateCategoryTable(mappedData);
+                } else {
+                    // Request failed, handle errors
+                    console.error('Request failed with status:', xhr.status);
+                }
+            }
+        };
+
+        xhr.open('GET', url, true);
+        xhr.send();
+    }
+</script>
+
+<script>
+    const form = document.getElementById('MedicineForm');
+    const submitButton = form.querySelector('button[type="submit"]');
+    const requiredInputs = form.querySelectorAll('input[required]');
+
+    // Function to check if all required inputs are filled
+    function checkInputs() {
+        let allFilled = true;
+        requiredInputs.forEach(input => {
+            if (!input.value.trim()) {
+                allFilled = false;
+            }
+        });
+
+        submitButton.disabled = !allFilled;
+    }
+
+    // Event listener to check inputs on change
+    requiredInputs.forEach(input => {
+        input.addEventListener('input', checkInputs);
+    });
+
+    // Initial check on page load
+    checkInputs();
+
+    // Event listener for form submission
+    form.addEventListener('submit', event => {
+        if (!checkInputs()) {
+            event.preventDefault(); // Prevent form submission if inputs are not filled
+        }
+    });
+</script>
+<script>
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+    }  
+
+    function populateForm(data) {
+        const form = document.getElementById('medicineUpdateForm');
+        const manufacturingDate = formatDate(data[0]["ManufacturingDate"]);
+        const expiryDate = formatDate(data[0]["ExpiryDate"]);
+        
+        // Populate form fields with received data
+        document.getElementById('MedicineIDUpdate').value = data[0]["MedicineID"];
+        document.getElementById('selectSupplierIDUpdate').value = data[0]["SupplierName"]; 
+        document.getElementById('SupplierIDUpdate').value = data[0]["SupplierID"];
+        document.getElementById('selectCategoryIDUpdate').value = data[0]["CategoryName"];
+        document.getElementById('CategoryIDUpdate').value = data[0]["CategoryID"];
+        document.getElementById('MedicineNameUpdate').value = data[0]["MedicineName"];
+        document.getElementById('NumberOfStripsUpdate').value = data[0]["NumberOfStrips"];
+        document.getElementById('PricePerStripUpdate').value = data[0]["PricePerStrip"];
+        document.getElementById('NumberOfTabletsUpdate').value = data[0]["NumberOfTablets"];
+        document.getElementById('RouteOfIntakeUpdate').value = data[0]["RouteOfIntake"];
+        document.getElementById('StrengthsUpdate').value = data[0]["Strengths"];
+        document.getElementById('ManufacturingDateUpdate').value = manufacturingDate;
+        document.getElementById('ExpiryDateUpdate').value = expiryDate;
+        document.getElementById('ContainerUpdate').value = data[0]["Container"];
+        document.getElementById('TabletCountPerStripUpdate').value = data[0]["TabletCountPerStrip"];
+    }
+        // Function to update medical data
+    function updateMedicalData(flag) {
+        // Get values from the form
+        const MedicineID = document.getElementById('MedicineIDUpdate').value;
+        const CategoryID = document.getElementById('CategoryIDUpdate').value;
+        const SupplierID = document.getElementById('SupplierIDUpdate').value;
+        const MedicineName = document.getElementById('MedicineNameUpdate').value;
+        const NumberOfStrips = document.getElementById('NumberOfStripsUpdate').value;
+        const NumberOfTablets = document.getElementById('NumberOfTabletsUpdate').value;
+        const PricePerStrip = document.getElementById('PricePerStripUpdate').value;
+        const RouteOfIntake = document.getElementById('RouteOfIntakeUpdate').value;
+        const Strengths = document.getElementById('StrengthsUpdate').value;
+        const ManufacturingDate = document.getElementById('ManufacturingDateUpdate').value;
+        const ExpiryDate = document.getElementById('ExpiryDateUpdate').value;
+        const Container = document.getElementById('ContainerUpdate').value;
+        const TabletCountPerStrip = document.getElementById('TabletCountPerStripUpdate').value;
+
+        // Check if any of the required fields are empty
+        if (
+            MedicineID &&
+            CategoryID &&
+            SupplierID &&
+            MedicineName &&
+            NumberOfStrips &&
+            NumberOfTablets &&
+            PricePerStrip &&
+            RouteOfIntake &&
+            Strengths &&
+            ManufacturingDate &&
+            ExpiryDate &&
+            Container &&
+            TabletCountPerStrip
+        ) {
+            if (flag == "update") {
+                const url = `/Pharmacy/UpdateMedicalData?MedicineID=${MedicineID}&CategoryID=${CategoryID}&SupplierID=${SupplierID}&MedicineName=${MedicineName}&NumberOfStrips=${NumberOfStrips}&PricePerStrip=${PricePerStrip}&NumberOfTablets=${NumberOfTablets}&RouteOfIntake=${RouteOfIntake}&Strengths=${Strengths}&ManufacturingDate=${ManufacturingDate}&ExpiryDate=${ExpiryDate}&Container=${Container}&TabletCountPerStrip=${TabletCountPerStrip}&flag=${'update'}`;
+
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then(response => {
+                        var successToast = new bootstrap.Toast(document.getElementById("updateSelectSuccessToast"));
+                        successToast.show();
+                    })
+                    .catch(error => {
+                        // Handle error
+                    });
+            }
+            else if (flag == "delete") {
+                const confirmation = confirm('Are you sure you want to delete this item?');
+                if (confirmation) {
+                    const url = `/Pharmacy/UpdateMedicalData?MedicineID=${MedicineID}&CategoryID=${CategoryID}&SupplierID=${SupplierID}&MedicineName=${MedicineName}&NumberOfStrips=${NumberOfStrips}&PricePerStrip=${PricePerStrip}&NumberOfTablets=${NumberOfTablets}&RouteOfIntake=${RouteOfIntake}&Strengths=${Strengths}&ManufacturingDate=${ManufacturingDate}&ExpiryDate=${ExpiryDate}&flag=${'delete'}`;
+
+                    fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                        .then(response => {
+                            document.getElementById('MedicineIDUpdate').value = '';
+                            document.getElementById('selectSupplierIDUpdate').value = '';
+                            document.getElementById('SupplierIDUpdate').value = '';
+                            document.getElementById('selectCategoryIDUpdate').value = '';
+                            document.getElementById('CategoryIDUpdate').value = '';
+                            document.getElementById('MedicineNameUpdate').value = '';
+                            document.getElementById('NumberOfStripsUpdate').value = '';
+                            document.getElementById('PricePerStripUpdate').value = '';
+                            document.getElementById('NumberOfTabletsUpdate').value = '';
+                            document.getElementById('RouteOfIntakeUpdate').value = '';
+                            document.getElementById('StrengthsUpdate').value = '';
+                            document.getElementById('ManufacturingDateUpdate').value = '';
+                            document.getElementById('ExpiryDateUpdate').value = '';
+                            var tableBody = document.getElementById('MedicineTableBody');
+                            tableBody.innerHTML = ''; // Clear existing table data
+                            var successToast = new bootstrap.Toast(document.getElementById("updatedeleteToast"));
+                            successToast.show();
+                        })
+                        .catch(error => {
+                            // Handle error
+                        });
+                }
+            }
+        } else {
+            // Show a message or take appropriate action when required fields are empty
+            var successToast = new bootstrap.Toast(document.getElementById("updateSelectToast"));
+            successToast.show();
+        }
+    }
+
+</script>

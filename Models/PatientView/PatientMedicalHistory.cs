@@ -5,6 +5,6 @@
         public string? PatientId { get; set; }
         public string? MedicalHistoryText { get; set; }
 
-        public DateTime MedicalHistoryVisitDate { get; set; }
+        public string? MedicalHistoryVisitDate { get; set; }
     }
 }

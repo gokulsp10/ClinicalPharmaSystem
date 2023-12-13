@@ -21,7 +21,7 @@
                 <td>@user.UserName</td>
                 <td>@user.PhoneNumber</td>
                 <td>
-                    <select id="roleDropdown_@user.Id" class="form-control">
+                    <select id="roleDropdown_@user.Id" class="roleDropdown form-control" data-user-no="@user.PhoneNumber" data-user-id="@user.Id">
                         @{
                             // Assuming you have a list of roles passed from the controller
                             var roles = ViewBag.Roles as List<Role>;
@@ -36,19 +36,142 @@
                     </select>
                 </td>
                 <td>
-                    <button type="button" class="btn btn-success" onclick="approveUser('@user.Id')">Approve</button>
-                    <button type="button" class="btn btn-danger" onclick="rejectUser('@user.Id')">Reject</button>
+                    <button type="button" class="HideForDoctor btn btn-success" onclick="approveUser('@user.Id')">Approve</button>
+                    <button type="button" class="HideForDoctor btn btn-danger" onclick="rejectUser('@user.Id')">Reject</button>
                 </td>
             </tr>
         }
     </tbody>
 </table>
 
+<div id="doctorDetails" style="display: none;">
+    <h3>Doctor Details</h3>
+    <div class="row mb-3">
+        <label for="doctorId" class="col-sm-2 col-form-label">Doctor ID</label>
+        <div class="col-sm-10">
+            <input type="text" style="width:200px" readonly class="form-control" id="doctorId" />
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label for="doctorName" class="col-sm-2 col-form-label">Doctor Name</label>
+        <div class="col-sm-10">
+            <input type="text" style="width:200px" class="form-control" id="doctorName" />
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <label for="contactMobile" class="col-sm-2 col-form-label">Contact Mobile</label>
+        <div class="col-sm-10">
+            <input type="text" style="width:200px" class="form-control" id="contactMobile" />
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label for="contactNumber" class="col-sm-2 col-form-label">Alternate Number</label>
+        <div class="col-sm-10">
+            <input type="text" style="width:200px" class="form-control" id="contactNumber" />
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label for="regNo" class="col-sm-2 col-form-label">Reg No</label>
+        <div class="col-sm-10">
+            <input type="text" style="width:200px" class="form-control" id="regNo" />
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label for="doctorStudy" class="col-sm-2 col-form-label">Doctor Study</label>
+        <div class="col-sm-10">
+            <input type="text" style="width:300px" class="form-control" id="doctorStudy" />
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label for="doctorSpeciality" class="col-sm-2 col-form-label">Doctor Speciality</label>
+        <div class="col-sm-10">
+            <input type="text" style="width:300px" class="form-control" id="doctorSpeciality" />
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label for="doctorContactAddress" class="col-sm-2 col-form-label">Doctor Contact Address</label>
+        <div class="col-sm-10">
+            <textarea class="form-control" style="width:300px;height:150px" id="doctorContactAddress" style="width:400px;"></textarea>
+        </div>
+    </div>
+
+    <!-- Submit button for capturing doctor info -->
+    <button type="button" class="btn btn-primary" onclick="captureDoctorInfo()">Submit Doctor Info</button>
+</div>
+<div class="position-fixed bottom-0 end-0 p-3" id="toastContainer">
+    <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="1000">
+        <div class="toast-header">
+            <strong class="me-auto">Success</strong>
+            <small>Just now</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            Doctor details added successfully. Proceed with Approval.
+        </div>
+    </div>
+    <div id="actionToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="1000">
+        <div class="toast-header">
+            <strong class="me-auto">Success</strong>
+            <small>Just now</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            Action completed successfully..
+        </div>
+    </div>
+</div>
+
 @section Scripts
     {
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Optional: Font Awesome for additional icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+
+        function captureDoctorInfo() {
+            var doctorVerification = {
+                DoctorId: $('#doctorId').val(),
+                DoctorName: $('#doctorName').val(),
+                DoctorStudy: $('#doctorStudy').val(),
+                DoctorSpeciality: $('#doctorSpeciality').val(),
+                DoctorContactAddress: $('#doctorContactAddress').val(),
+                ContactMobile: $('#contactMobile').val(),
+                ContactNumber: $('#contactNumber').val(),
+                RegNo: $('#regNo').val()
+            };
+            $.ajax({
+                type: 'POST',
+                url: '/Settings/doctordetailsUpload',
+                contentType: 'application/json',
+                data: JSON.stringify(doctorVerification),
+                success: function (response) {
+                    $('.HideForDoctor').show();
+                    $('#doctorDetails').hide();
+                    // Handle success response
+                    var successToast = new bootstrap.Toast(document.getElementById('successToast'));
+                    successToast.show();
+                    console.log('Data sent successfully!');
+                },
+                error: function (error) {
+                    // Handle error
+                    console.error('Error sending data:', error);
+                }
+            });
+        }
+    </script>
+
     <script>
         // Define showToast function
         function showToast(type, message) {
@@ -75,9 +198,8 @@
                     if (result.success) {
                         // Remove the corresponding row from the table
                         $("#row_" + userId).remove();
-
-                        // Show a success toast message
-                        showToast("success", result.message);
+                        var actionToast = new bootstrap.Toast(document.getElementById('successToast'));
+                        successToast.show();
 
                     } else {
                         // Show an error toast message
@@ -91,5 +213,30 @@
             });
         }
     </script>
+    <script>
+        $(document).ready(function () {
+            $('.roleDropdown').change(function () {
+                console.log('change initiated');
+                var selectedValue = $(this).val();
+                var userId = $(this).data('user-id');
+                var mobno = $(this).data('user-no');
+                console.log(userId);
+                console.log(selectedValue);
+                if (selectedValue === '2') {
+                    console.log(userId);
+                    console.log(selectedValue);
+                    // Show the div with inputs for Doctor details
+                    $('#doctorDetails').show();
+                    $('.HideForDoctor').hide();
+                    $('#contactMobile').val(mobno);
+                    $('#doctorId').val(userId);
+                } else {
+                    // Hide the div if another role is selected
+                    $('#doctorDetails').hide();
+                }
+            });            
+
+        });
+        </script>
 }
 

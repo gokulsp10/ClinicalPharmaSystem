@@ -32,6 +32,12 @@ builder.Services.AddTransient<AppointmentRepository>(_ => new AppointmentReposit
 
 builder.Services.AddTransient<SettingsRepository>(_ => new SettingsRepository(connectionString));
 
+builder.Services.AddTransient<PharmacyRepository>(serviceProvider =>
+{
+    var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+    return new PharmacyRepository(connectionString, httpContextAccessor);
+});
+
 builder.Services.AddTransient<MenuViewComponent>();
 
 // Add HttpContextAccessor
@@ -58,7 +64,7 @@ app.UseAuthorization();
 
 app.Use((context, next) =>
 {
-    return new RoleBasedMiddleware(next, "Home/Login", "Doctor", "Admin", "Pharmacy", "Lab Technician").Invoke(context);
+    return new RoleBasedMiddleware(next, "Home/Login", "Home/Registration","Doctor", "Admin", "Pharmacy", "Lab Technician").Invoke(context);
 });
 
 // Use session

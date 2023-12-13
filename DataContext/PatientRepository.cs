@@ -9,6 +9,9 @@ using Newtonsoft.Json.Linq;
 using System.Reflection;
 using Microsoft.AspNet.Identity;
 using ClinicalPharmaSystem.Models.PatientView;
+using System.Data.Common;
+using System.Globalization;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ClinicalPharmaSystem.DataContext
 {
@@ -21,17 +24,285 @@ namespace ClinicalPharmaSystem.DataContext
             this.connectionString = connectionString;
         }
 
-        public List<PatientModel> ViewPatient(string patientId)
+        public PatientView ViewPatient(string patientId,string userName, string datepickerFrom, string datepickerTo)
+        {
+            PatientView patients = new PatientView();
+            patients.patientInfo = GetPatientInfo(patientId, datepickerFrom, datepickerTo);
+            patients.patientHealthData = GetHealthData(patientId, datepickerFrom, datepickerTo);
+            patients.patientDiseaseMetrics = GetDiseaseMetrics(patientId, datepickerFrom, datepickerTo);
+            patients.patientMedicalHistory = GetMedicalHistory(patientId, datepickerFrom, datepickerTo);
+            patients.patientClinicalNotes = GetClinicalNotes(patientId, datepickerFrom, datepickerTo);
+            patients.patientPrescriptions = GetPatientPrescription(patientId, datepickerFrom, datepickerTo);
+            patients.doctorDetails = GetDoctorDetails(userName);
+            patients.clinicDetails = GetClinicDetails();
+            return patients;
+        }
+
+        public List<PatientModel> ViewPatientExist(string patientId)
         {
             List<PatientModel> patients = new List<PatientModel>();
             using IDbConnection dbConnection = new SqlConnection(connectionString);
             dbConnection.Open();
 
             // Replace "Users" with the actual name of your Users table
-            var query = "SELECT top 3 PatientData.PatientId PatientId,PatientName,MobileNo,Address,Sex,Age,Date,BloodPressure,PulseRate,Weight,SpO2,DiseaseName,DiseasesTestName,Testvalue,ReportDate TestTakenDate,ClinicalNotesText, ClinicalNotes.VisitDate ClinicalNotesVisitDate,\r\nMedicalHistory.MedicalHistoryText MedicalHistoryText,\r\nMedicalHistory.VisitDate MedicalHistoryVisitDate FROM PatientData inner join PatientHealthData on PatientData.PatientId = PatientHealthData.PatientId \r\nleft outer join PatientTestValues on PatientData.PatientId = PatientTestValues.PatientId left outer join T_Diseases_Master on T_Diseases_Master.DiseasesId = PatientTestValues.DiseasesId\r\nleft outer join T_DiseaseTest_Values on T_DiseaseTest_Values.DiseasesId = PatientTestValues.DiseasesId\r\nleft outer join ClinicalNotes on PatientData.PatientId = ClinicalNotes.PatientId \r\nleft outer join MedicalHistory on PatientData.PatientId = MedicalHistory.PatientId WHERE PatientData.PatientId = @PatientId order by PatientTestValues.indexid desc";
+            var query = "SELECT PatientData.PatientId PatientId,PatientName,MobileNo,Address,Sex,Age,Date,BloodPressure,PulseRate,Weight,SpO2,DiseaseName,DiseasesTestName,Testvalue,ReportDate TestTakenDate,ClinicalNotesText, ClinicalNotes.VisitDate ClinicalNotesVisitDate,\r\nMedicalHistory.MedicalHistoryText MedicalHistoryText,\r\nMedicalHistory.VisitDate MedicalHistoryVisitDate FROM PatientData inner join PatientHealthData on PatientData.PatientId = PatientHealthData.PatientId \r\nleft outer join PatientTestValues on PatientData.PatientId = PatientTestValues.PatientId left outer join T_Diseases_Master on T_Diseases_Master.DiseasesId = PatientTestValues.DiseasesId\r\nleft outer join T_DiseaseTest_Values on T_DiseaseTest_Values.DiseasesId = PatientTestValues.DiseasesId\r\nleft outer join ClinicalNotes on PatientData.PatientId = ClinicalNotes.PatientId \r\nleft outer join MedicalHistory on PatientData.PatientId = MedicalHistory.PatientId WHERE PatientData.PatientId = @PatientId order by PatientTestValues.indexid desc";
 
             // Execute the query and return a User object or null if not found
             patients = dbConnection.Query<PatientModel>(query, new { PatientId = patientId }).ToList();
+            return patients;
+        }
+
+        public List<PatientInfo> GetPatientInfo(string patientId, string datepickerFrom, string datepickerTo)
+        {
+            List<PatientInfo> patients = new List<PatientInfo>();
+
+            using (IDbConnection dbConnection = new SqlConnection(connectionString))
+            {
+                dbConnection.Open();
+
+                string query = "SELECT PatientId, PatientName, MobileNo, Address, Sex, Age " +
+                               "FROM PatientData " +
+                               "WHERE PatientId = @PatientId ";
+                if(datepickerFrom == null)
+                {
+                    var dates = ParseDateRange(datepickerTo);
+                    datepickerFrom = dates.Item1;
+                    datepickerTo = dates.Item2;
+                }
+
+                if (datepickerTo != null)
+                {
+                    query += "AND CONVERT(VARCHAR, CreatedDate, 105) BETWEEN @datepickerFrom AND @datepickerTo";
+                    patients = dbConnection.Query<PatientInfo>(
+                        query,
+                        new { PatientId = patientId, datepickerFrom = datepickerFrom, datepickerTo = datepickerTo }
+                    ).ToList();
+                }
+                else
+                {
+                    query += "AND CONVERT(VARCHAR, CreatedDate, 105) = @datepickerFrom";
+                    patients = dbConnection.Query<PatientInfo>(
+                        query,
+                        new { PatientId = patientId, datepickerFrom = datepickerFrom }
+                    ).ToList();
+                }
+            }
+            return patients;
+        }
+
+        public List<Models.PatientView.PatientHealthData> GetHealthData(string patientId, string datepickerFrom, string datepickerTo)
+        {
+            List<Models.PatientView.PatientHealthData> patients = new List<Models.PatientView.PatientHealthData>();
+
+            using (IDbConnection dbConnection = new SqlConnection(connectionString))
+            {
+                dbConnection.Open();
+
+                string query = "SELECT Date, BloodPressure, PulseRate, Weight, SpO2, CONVERT(VARCHAR(10), CreatedDate, 103) AS CreatedDate " +
+                               "FROM PatientHealthData " +
+                               "WHERE PatientId = @PatientId ";
+                if (datepickerFrom == null)
+                {
+                    var dates = ParseDateRange(datepickerTo);
+                    datepickerFrom = dates.Item1;
+                    datepickerTo = dates.Item2;
+                }
+                if (datepickerTo != null)
+                {
+                    query += "AND CONVERT(VARCHAR, CreatedDate, 105) BETWEEN @datepickerFrom AND @datepickerTo " +
+                             "ORDER BY indexid DESC";
+
+                    patients = dbConnection.Query<Models.PatientView.PatientHealthData>(
+                        query,
+                        new { PatientId = patientId, datepickerFrom = datepickerFrom, datepickerTo = datepickerTo }).ToList();
+                }
+                else
+                {
+                    query += "AND CONVERT(VARCHAR, CreatedDate, 105) = @datepickerFrom " +
+                             "ORDER BY indexid DESC";
+
+                    patients = dbConnection.Query<Models.PatientView.PatientHealthData>(
+                        query,
+                        new { PatientId = patientId, datepickerFrom = datepickerFrom }
+                    ).ToList();
+                }
+            }
+            return patients;
+        }
+
+        public List<PatientDiseaseMetrics> GetDiseaseMetrics(string patientId, string datepickerFrom, string datepickerTo)
+        {
+            List<PatientDiseaseMetrics> patients = new List<PatientDiseaseMetrics>();
+
+            using (IDbConnection dbConnection = new SqlConnection(connectionString))
+            {
+                dbConnection.Open();
+
+                string query = "SELECT PatientData.PatientId, DiseaseName, DiseasesTestName, Testvalue, " +
+                               "CASE " +
+                               "   WHEN Testvalue BETWEEN Ref_NormalStartValue AND Ref_NormalEndValue THEN 'Normal' " +
+                               "   WHEN Testvalue BETWEEN Ref_AboveNormalStartValue AND Ref_AboveNormalEndValue AND Gender = PatientData.Sex THEN 'Above Normal - Alarmning' " +
+                               "   WHEN Testvalue BETWEEN Ref_HighStartValue AND Ref_HighEndValue AND Gender = PatientData.Sex THEN 'High - Moderate Risk' " +
+                               "   WHEN Testvalue BETWEEN Ref_HigherStartValue AND Ref_HigherEndValue AND Gender = PatientData.Sex THEN 'Very High - High Risk' " +
+                               "END AS 'Status', " +
+                               "CONVERT(VARCHAR(10), PatientTestValues.CreatedDate, 103) AS TestTakenDate " +
+                               "FROM PatientData " +
+                               "INNER JOIN PatientTestValues ON PatientData.PatientId = PatientTestValues.PatientId " +
+                               "INNER JOIN T_Diseases_Master ON PatientTestValues.DiseasesId = T_Diseases_Master.DiseasesId " +
+                               "INNER JOIN T_DiseaseTest_Values ON T_DiseaseTest_Values.DiseasesTestId = PatientTestValues.DiseasesTestId " +
+                               "WHERE PatientData.PatientId = @PatientId ";
+                if (datepickerFrom == null)
+                {
+                    var dates = ParseDateRange(datepickerTo);
+                    datepickerFrom = dates.Item1;
+                    datepickerTo = dates.Item2;
+                }
+                if (datepickerTo != null)
+                {
+                    query += "AND CONVERT(VARCHAR, PatientTestValues.CreatedDate, 105) BETWEEN @datepickerFrom AND @datepickerTo";
+                }
+                else
+                {
+                    query += "AND CONVERT(VARCHAR, PatientTestValues.CreatedDate, 105) = @datepickerFrom";
+                }
+
+                patients = dbConnection.Query<PatientDiseaseMetrics>(
+                    query,
+                    new { PatientId = patientId, datepickerFrom =datepickerFrom, datepickerTo = datepickerTo }
+                ).ToList();
+            }
+
+            return patients;
+        }
+
+        public List<PatientClinicalNotes> GetClinicalNotes(string patientId, string datepickerFrom, string datepickerTo)
+        {
+            List<PatientClinicalNotes> patients = new List<PatientClinicalNotes>();
+
+            using (IDbConnection dbConnection = new SqlConnection(connectionString))
+            {
+                dbConnection.Open();
+
+                string query = "SELECT PatientId, ClinicalNotesText, CONVERT(VARCHAR(10), VisitDate, 103) AS ClinicalNotesVisitDate " +
+                               "FROM ClinicalNotes " +
+                               "WHERE PatientId = @PatientId ";
+
+                if (datepickerFrom == null)
+                {
+                    var dates = ParseDateRange(datepickerTo);
+                    datepickerFrom = dates.Item1;
+                    datepickerTo = dates.Item2;
+                    query += "AND CONVERT(VARCHAR, VisitDate, 105) BETWEEN @datepickerFrom AND @datepickerTo";
+                }
+                else
+                {
+                    query += "AND CONVERT(VARCHAR, VisitDate, 105) = @datepickerFrom";
+                }
+
+                query += " ORDER BY ClinicalNotesId DESC";
+
+                patients = dbConnection.Query<PatientClinicalNotes>(
+                    query,
+                    new { PatientId = patientId, datepickerFrom = datepickerFrom, datepickerTo = datepickerTo }
+                ).ToList();
+            }
+
+            return patients;
+        }
+
+        public List<PatientMedicalHistory> GetMedicalHistory(string patientId, string datepickerFrom, string datepickerTo)
+        {
+            List<PatientMedicalHistory> patients = new List<PatientMedicalHistory>();
+
+            using (IDbConnection dbConnection = new SqlConnection(connectionString))
+            {
+                dbConnection.Open();
+
+                string query = "SELECT PatientId, MedicalHistoryText, CONVERT(VARCHAR(10), VisitDate, 103) AS MedicalHistoryVisitDate " +
+                               "FROM MedicalHistory " +
+                               "WHERE PatientId = @PatientId ";
+
+                if (datepickerFrom == null)
+                {
+                    var dates = ParseDateRange(datepickerTo);
+                    datepickerFrom = dates.Item1;
+                    datepickerTo = dates.Item2;
+                    query += "AND CONVERT(VARCHAR, VisitDate, 105) BETWEEN @datepickerFrom AND @datepickerTo";
+                }
+                else
+                {
+                    query += "AND CONVERT(VARCHAR, VisitDate, 105) = @datepickerFrom";
+                }
+
+                query += " ORDER BY MedicalHistoryId DESC";
+
+                patients = dbConnection.Query<PatientMedicalHistory>(
+                    query,
+                    new { PatientId = patientId, datepickerFrom = datepickerFrom, datepickerTo = datepickerTo}
+                ).ToList();
+            }
+
+            return patients;
+        }
+        public List<PatientPrescription> GetPatientPrescription(string patientId, string datepickerFrom, string datepickerTo)
+        {
+            List<PatientPrescription> patients = new List<PatientPrescription>();
+
+            using (IDbConnection dbConnection = new SqlConnection(connectionString))
+            {
+                dbConnection.Open();
+
+                string query = "SELECT Name, Frequency, Instructions, Days, CONVERT(VARCHAR(10), CreatedDate, 103) AS CreatedDate " +
+                               "FROM PatientPrescription " +
+                               "WHERE PatientId = @PatientId ";
+
+                if (datepickerFrom == null)
+                {
+                    var dates = ParseDateRange(datepickerTo);
+                    datepickerFrom = dates.Item1;
+                    datepickerTo = dates.Item2;
+                    query += "AND CONVERT(VARCHAR, CreatedDate, 105) BETWEEN @datepickerFrom AND @datepickerTo";
+                }
+                else
+                {
+                    query += "AND CONVERT(VARCHAR, CreatedDate, 105) = @datepickerFrom";
+                }
+
+                query += " ORDER BY SerialNumber DESC";
+
+                patients = dbConnection.Query<PatientPrescription>(
+                    query,
+                    new { PatientId = patientId, datepickerFrom = datepickerFrom, datepickerTo = datepickerTo}
+                ).ToList();
+            }
+
+            return patients;
+        }
+
+        public DoctorDetails GetDoctorDetails(string userName)
+        {
+            using IDbConnection dbConnection = new SqlConnection(connectionString);
+            dbConnection.Open();
+
+            // Replace "Users" with the actual name of your Users table
+            var query = "select DoctorName,DoctorStudy,DoctorSpeciality,DoctorContactAddress,ContactMobile,ContactNumber,RegNo from Users inner join Doctors on Id=DoctorId where UserName =@userName";
+
+            // Execute the query and return a User object or null if not found
+            DoctorDetails doctor = dbConnection.QueryFirstOrDefault<DoctorDetails>(query, new { userName = userName });
+            return doctor;
+        }
+
+        public ClinicDetails GetClinicDetails()
+        {
+            ClinicDetails patients = new ClinicDetails();
+            using IDbConnection dbConnection = new SqlConnection(connectionString);
+            dbConnection.Open();
+
+            // Replace "Users" with the actual name of your Users table
+            var query = "select * from ClinicalInfo";
+
+            // Execute the query and return a User object or null if not found
+            patients = dbConnection.QueryFirstOrDefault<ClinicDetails>(query);
             return patients;
         }
 
@@ -143,8 +414,8 @@ namespace ClinicalPharmaSystem.DataContext
         {
             using (IDbConnection dbConnection = new SqlConnection(connectionString))
             {
-                var query = "INSERT INTO PatientHealthData (PatientId, Date, BloodPressure, PulseRate, Weight,SpO2) " +
-                    "VALUES (@PatientId, @Date, @BloodPressure, @PulseRate, @Weight,@SpO2);";
+                var query = "INSERT INTO PatientHealthData (PatientId, Date, BloodPressure, PulseRate, Weight,SpO2,CreatedDate) " +
+                    "VALUES (@PatientId, @Date, @BloodPressure, @PulseRate, @Weight,@SpO2,@CreatedDate);";
 
                 // Execute the query to save the row data
                 dbConnection.Execute(query, new
@@ -154,7 +425,8 @@ namespace ClinicalPharmaSystem.DataContext
                     BloodPressure = healthData.BloodPressure,
                     PulseRate = healthData.PulseRate,
                     Weight = healthData.Weight,
-                    SpO2 = healthData.SpO2
+                    SpO2 = healthData.SpO2,
+                    CreatedDate = DateTime.Now
                 });
             }
 
@@ -396,6 +668,26 @@ namespace ClinicalPharmaSystem.DataContext
             return 1; // Indicates successful insertion
 
         }
+
+        public static (string, string) ParseDateRange(string dateRangeString)
+        {
+            string[] dateParts = dateRangeString.Split(new string[] { " to " }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (dateParts.Length == 2)
+            {
+                if (DateTime.TryParseExact(dateParts[0], "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime fromDate) &&
+                    DateTime.TryParseExact(dateParts[1], "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime toDate))
+                {
+                    string formattedFromDate = fromDate.ToString("dd-MM-yyyy");
+                    string formattedToDate = toDate.ToString("dd-MM-yyyy");
+
+                    return (formattedFromDate, formattedToDate);
+                }
+            }
+
+            return (null, null);
+        }
+
 
     }
 }

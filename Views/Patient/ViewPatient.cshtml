@@ -1,15 +1,30 @@
-﻿@model List<PatientModel>
+﻿@model ClinicalPharmaSystem.Models.PatientView.PatientView
 <!-- Add this script tag in your HTML to include jQuery -->
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+<!-- Flatpickr JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
 <style>
     #patientTable {
         max-height: 300px; /* Adjust the maximum height as needed */
         overflow-y: auto;
-    }    
+    } 
+
+    .containerPrint {
+        display: flex;
+        border: 1px solid #000;
+    }
+
+    .box {        
+        margin: 5px;
+    }
 
 </style>
 
 <div class="container">
-<h2>Patient Details (Latest 3 visits)</h2>
+<h2>Patient Details</h2>
 
 @{
     string patientId = ViewBag.PatientId.ToString();
@@ -21,185 +36,289 @@
         <div class="col">
             <div class="form-group">
                 <label for="patientId">Patient Id:</label>
-                <input type="text" id="patientId" name="patientId" class="form-control" style="width: 100px;" value="@patientId" />
+                <input type="text" required id="patientId" name="patientId" class="form-control" style="width: 100px;" value="@patientId" />
             </div>
         </div>
+            <div id="singleDateDiv" class="col">
+                <div class="form-group">
+                    <label for="datepickerFrom">Select Date:</label>
+                    <input type="text" required id="datepickerFrom" name="datepickerFrom" class="form-control" style="width: 150px;" />
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label for="datepickerTo">Select Date Range:</label>
+                    <input type="checkbox" style="margin-left:20px" id="showDatePicker" class="form-check-input" />
+                    <div id="divFromDate" style="display: none;">
+                        <input type="text" required id="datepickerTo" name="datepickerTo" class="form-control" style="width: 250px;" placeholder="Select date range" />
+                    </div>
+                </div>
+            </div>
         <div class="col">
-            <button type="submit" class="btn btn-primary">View Patient</button>
+                <div class="form-group">
+                    <label ></label>
+                    <button style="margin-top:30px" type="submit" class="btn btn-primary">View Patient</button>
+                </div>            
         </div>
     </div><br />
 }
-    
-    @{
-    bool anyValuesPresent = Model.Any(patient =>
+    <div>
+        @{
+            bool anyValuesPresent = Model.patientHealthData.Any(patient =>
         !string.IsNullOrEmpty(patient.BloodPressure) ||
         !string.IsNullOrEmpty(patient.PulseRate) ||
         !string.IsNullOrEmpty(patient.Weight) ||
         !string.IsNullOrEmpty(patient.SpO2));
 
-    if (anyValuesPresent)
-    {
-    <table id="tblpatientDetails" class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Patient Name</th>
-                <th>Mobile No</th>
-                <th>Address</th>
-                <th>Sex</th>
-                <th>Age</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model.Any()) // Check if the Model is not empty
+            if (anyValuesPresent)
             {
-                foreach (var patient in Model)
+                    <div id="contentToPrint">
+                        @if (Model.doctorDetails != null && !string.IsNullOrEmpty(Model.doctorDetails.DoctorName))
+                    {
+                            <div id="headerDiv" style="display:none" class="containerPrint">
+                                <div style="width:35%" class="box"><br><br>
+                                    <p>
+                                        <img src="/Images/ClinicLogo.ico" alt="Logo" width="90" height="90" /><br>
+                                        @Model.clinicDetails.ClinicName<br>
+                                        @Model.clinicDetails.ClinicContactAddress<br>
+                                        @Model.clinicDetails.WorkingHours<br>
+                                    </p>
+                                        <span style="font-weight: bold;">For Appointments:</span>
+                                    <p>
+                                        @Model.clinicDetails.AppointmentLink<br>
+                                    @Model.clinicDetails.AppointmentPhone</p>                            
+                                 </div>
+                                <div style="text-align:center;width:30%" class="box">
+                                    <span id="doctorName" style="font-weight: bold; font-size: 20px;">@Model.doctorDetails.DoctorName</span>
+                                    <br>
+                                <input type="hidden" id="doctorRegNo" value="@Model.doctorDetails.RegNo">
+
+                                </div>
+                                <div tyle="width:35%" class="box" style="margin-left:80px">
+                                    <br><br>
+                                    <p>@Model.doctorDetails.DoctorSpeciality<br>
+                                    @Model.doctorDetails.DoctorStudy<br>
+                                    @Model.doctorDetails.DoctorContactAddress<br>
+                                    @Model.doctorDetails.ContactMobile<br>
+                                    @Model.doctorDetails.ContactNumber</p>
+                                </div>
+                            </div>
+
+                    }<br>
+
+        <table id="tblpatientDetails" class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Patient Name</th>                    
+                    <th>Sex</th>
+                    <th>Age</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.patientInfo.Any()) // Check if the Model is not empty
+            {
+                foreach (var patient in Model.patientInfo)
                 {
-                    <tr>
-                        <td>@patient.PatientName</td>
-                        <td>@patient.MobileNo</td>
-                        <td>@patient.Address</td>
-                        <td>@patient.Sex</td>
-                        <td>@patient.Age</td>
-                    </tr>
+                        <tr>
+                            <td>@patient.PatientName</td>
+                            <td>@patient.Sex</td>
+                            <td>@patient.Age</td>
+                        </tr>
                 }
             }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
 
-    <br />
+        <br />
 
-    <table class="table table-bordered" id="patientTable">
-        <thead>
-            <tr>
-                <th>Blood Pressure</th>
-                <th>Pulse Rate</th>
-                <th>Weight</th>
-                <th>SpO2</th>
-                <th>Visit Date</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model.Any()) // Check if the Model is not empty
+                <table class="table table-bordered" id="patientTable">
+            <thead>
+                <tr>
+                    <th>Blood Pressure</th>
+                    <th>Pulse Rate</th>
+                    <th>Weight</th>
+                    <th>SpO2</th>
+                    <th>Visit Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.patientHealthData.Any()) // Check if the Model is not empty
             {
-                foreach (var patient in Model)
+                foreach (var patient in Model.patientHealthData)
                 {
-                    <tr>
-                        <td>@patient.BloodPressure</td>
-                        <td>@patient.PulseRate</td>
-                        <td>@patient.Weight</td>
-                        <td>@patient.SpO2</td>
-                        <td>@patient.Date.ToShortDateString()</td>
-                    </tr>
+                        <tr>
+                            <td>@patient.BloodPressure</td>
+                            <td>@patient.PulseRate</td>
+                            <td>@patient.Weight</td>
+                            <td>@patient.SpO2</td>
+                            <td>@patient.Date.ToShortDateString()</td>
+                        </tr>
                 }
             }
-        </tbody>
-    </table>
-
-            <table class="table table-bordered" id="patientDiseaseTable">
-                <thead>
-                    <tr>
-                        <th>Disease</th>
-                        <th>Test Name</th>
-                        <th>Value</th>
-                        <th>Status</th>
-                        <th>Test Taken Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model.Any()) // Check if the Model is not empty
+            </tbody>
+        </table>
+                @if (Model.patientDiseaseMetrics.Any()) 
+                {
+                <div id="diseasediv">
+                <table class="table table-bordered" id="patientDiseaseTable">
+                    <thead>
+                        <tr>
+                            <th>Disease</th>
+                            <th>Test Name</th>
+                            <th>Value</th>
+                            <th>Status</th>
+                            <th>Test Taken Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.patientDiseaseMetrics.Any()) // Check if the Model is not empty
                     {
-                        foreach (var patient in Model)
+                        foreach (var patient in Model.patientDiseaseMetrics)
                         {
-                            <tr>
-                                @if (string.IsNullOrEmpty(patient.DiseasesTestName)) // Check for null or empty TestName
+                                <tr>
+                                    @if (string.IsNullOrEmpty(patient.DiseasesTestName)) // Check for null or empty TestName
                                 {
-                                    <td colspan="4">No records found in this table</td>
+                                        <td colspan="4">No records found in this table</td>
                                 }
                                 else
                                 {
-                                    <td>@patient.DiseaseName</td>
-                                    <td>@patient.DiseasesTestName</td>
-                                    <td>@patient.Testvalue</td>
-                                    <td>@patient.Status</td>
-                                    <td>@patient.TestTakenDate</td>
+                                        <td>@patient.DiseaseName</td>
+                                        <td>@patient.DiseasesTestName</td>
+                                        <td>@patient.Testvalue</td>
+                                        <td>@patient.Status</td>
+                                        <td>@patient.TestTakenDate</td>
                                 }
-                            </tr>
+                                </tr>
                         }
                     }
-                </tbody>
-            </table>
-
-            <table class="table table-bordered" id="patientClinicalNotes">
-                <thead>
-                    <tr>
-                        <th>Clinical Notes</th>
-                        <th>Entered  Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model.Any()) // Check if the Model is not empty
+                    </tbody>
+                </table>
+                    </div>
+                    }
+                <table class="table table-bordered" id="patientClinicalNotes">
+                    <thead>
+                        <tr>
+                            <th>Clinical Notes</th>
+                            <th>Entered  Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.patientClinicalNotes.Any()) // Check if the Model is not empty
                     {
-                        foreach (var patient in Model)
+                        foreach (var patient in Model.patientClinicalNotes)
                         {
-                            <tr>
-                                @if (string.IsNullOrEmpty(patient.ClinicalNotesText)) // Check for null or empty TestName
+                                <tr>
+                                    @if (string.IsNullOrEmpty(patient.ClinicalNotesText)) // Check for null or empty TestName
                                 {
-                                    <td colspan="4">No records found in this table</td>
+                                        <td colspan="4">No records found in this table</td>
                                 }
                                 else
                                 {
 
-                                    <td>@patient.ClinicalNotesText</td>
-                                    <td>@patient.ClinicalNotesVisitDate</td>
+                                            <td style="width:1000px">@patient.ClinicalNotesText</td>
+                                        <td>@patient.ClinicalNotesVisitDate</td>
                                 }
-                            </tr>
+                                </tr>
                         }
                     }
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
 
-            <table class="table table-bordered" id="patientMedicationNotes">
-                <thead>
-                    <tr>
-                        <th>Medication History</th>
-                        <th>Entered  Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model.Any()) // Check if the Model is not empty
+                <table class="table table-bordered" id="patientMedicationNotes">
+                    <thead>
+                        <tr>
+                            <th>Medical History</th>
+                            <th>Entered  Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.patientMedicalHistory != null && Model.patientMedicalHistory.Any())
                     {
 
-                        foreach (var patient in Model)
+                        foreach (var patient in Model.patientMedicalHistory)
                         {
-                            <tr>
-                                @if (string.IsNullOrEmpty(patient.MedicalHistoryText)) // Check for null or empty TestName
+                                <tr>
+                                    @if (string.IsNullOrEmpty(patient.MedicalHistoryText)) // Check for null or empty TestName
                                 {
-                                    <td colspan="4">No records found in this table</td>
+                                        <td colspan="4">No records found in this table</td>
                                 }
                                 else
                                 {
-                                    <td>
-                                        <textarea class="form-control" rows="4" readonly>@patient.MedicalHistoryText</textarea>
-                                    </td>
+                                            <td style="width:1000px" class="medical-his-notes-cell">
+                                            <textarea id="medHist" class="form-control" rows="4" readonly>@patient.MedicalHistoryText</textarea>
+                                        </td>
 
-                                    <td>@patient.MedicalHistoryVisitDate</td>
+                                        <td>@patient.MedicalHistoryVisitDate</td>
                                 }
-                                
-                            </tr>
+                                    
+                                </tr>
                         }
                     }
-                </tbody>
-            </table>
-    <div style="margin-bottom: 50px;display:none">
-        <button type="button" class="btn btn-primary" id="addRow">Add Row</button>
-        <button type="button" class="btn btn-success" id="saveButton">Save</button>
-    </div>
+                    </tbody>
+                </table>
+                 <h3>
+                 Prescription:</h3>   
+                <table class="table table-bordered" id="patientPrescriptionTable">
+                    <thead>
+                        <tr>
+                            <th>Drug Name</th>
+                            <th>Frequency</th>
+                            <th>Instructions</th>
+                            <th>Days</th>
+                            <th>Visit Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.patientPrescriptions != null && Model.patientPrescriptions.Any())
+                    {
+                        foreach (var patient in Model.patientPrescriptions)
+                        {
+                                <tr>
+                                    @if (string.IsNullOrEmpty(patient.Name)) // Check for null or empty TestName
+                                {
+                                        <td colspan="4">No records found in this table</td>
+                                }
+                                else
+                                {
+                                        <td>@patient.Name</td>
+                                        <td>@patient.Frequency</td>
+                                        <td>@patient.Instructions</td>
+                                        <td>@patient.Days</td>
+                                        <td>@patient.CreatedDate</td>
+                                }
+                                </tr>
+                        }
+                    }
+                    </tbody>
+                </table>
+                <div id="doctorNotes" class="row">
+            <div class="col">
+                <div class="form-group">
+                                    <label for="Notes">Notes:</label>
+                                    <textarea id="notesTextArea" style="width: 600px;"></textarea>
+                </div>
+            </div>
+        </div>
+
+                        <div style="margin-bottom: 50px;">
+                        @{
+                            var userRole = ViewBag.UserRole as string;
+                        }
+
+                        @if (userRole == "Doctor")
+                        {
+                            <button type="button" onclick="printDivContent()" class="btn btn-primary" id="PrintBtn">Print</button>
+                        }
+                            <button type="button" style="display:none" class="btn btn-primary" id="addRow">Add Row</button>
+                            <button type="button" style="display:none" class="btn btn-success" id="saveButton">Save</button>
+                        </div>
+        </div>
         }
         else
         {
-    <div class="alert alert-warning" id="noRecordsMessage">
-        No records found.
-    </div>
+        <div class="alert alert-warning" id="noRecordsMessage">
+            No records found.
+        </div>
         }
         }
 <div class="position-fixed bottom-0 end-0 p-3" id="toastContainer">
@@ -216,9 +335,22 @@
 </div>
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+<script src="/js/print.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        $(document).ready(function () {
+            // Set the height of medical history textarea cells
+            $('.medical-his-notes-cell textarea').each(function () {
+                var $this = $(this);
+                $this.css('height', 'auto'); // Reset the height to auto
+                var scrollHeight = $this.prop('scrollHeight'); // Get scroll height
+                $this.css('height', scrollHeight + 'px'); // Set the textarea height
+            });
+        });
+    </script>
 <script>
     $(document).ready(function () {
+        
     // Add Row button click handler
     $("#addRow").click(function () {
         var newRow = `
@@ -297,12 +429,56 @@
 
 <script>
     // Use JavaScript to show/hide the "No records found" message based on the Model
-    document.addEventListener("DOMContentLoaded", function () {
-        var noRecordsMessage = document.getElementById("noRecordsMessage");
-        if (!@Model.Any()) {
-            noRecordsMessage.style.display = "block"; // Show the message
-        } else {
-            noRecordsMessage.style.display = "none"; // Hide the message
-        }
-    });
+        // document.addEventListener("DOMContentLoaded", function () {
+        //     var noRecordsMessage = document.getElementById("noRecordsMessage");
+        //     var hasPatientInfo = @(Model.patientInfo.Any() ? "true" : "false"); // Use conditional operator to output true/false
+
+        //     if (!hasPatientInfo && noRecordsMessage != null) {
+        //         noRecordsMessage.style.display = "block"; // Show the message
+        //     } else {
+        //         noRecordsMessage.style.display = "none"; // Hide the message
+        //     }
+        // });
+
+        flatpickr("#datepickerFrom", {
+            // defaultDate: "today", // Set the default date to today
+            dateFormat: "d-m-Y"   // Set date format to "date-month-year"
+        });
+
+        flatpickr("#datepickerTo", {
+            dateFormat: "d-m-Y"   // Set date format to "date-month-year"
+        });
+        document.addEventListener("DOMContentLoaded", function () {
+            flatpickr("#datepickerFrom", {
+                // defaultDate: "today",
+                dateFormat: "d-m-Y"
+            });
+
+            flatpickr("#datepickerTo", {
+                dateFormat: "d-m-Y"
+            });
+
+            var datepickerTo = document.getElementById('datepickerTo');
+            //var checkbox = document.getElementById('showDatePicker');
+
+            var fp = flatpickr(datepickerTo, {
+                mode: "range",
+                dateFormat: "d-m-Y",
+                // onClose: function () {
+                //     checkbox.checked = true;
+                // }
+            });
+
+            $('#showDatePicker').change(function () {
+                if (this.checked) {
+                    $('#divFromDate').show();
+                    $('#singleDateDiv').hide();
+                    fp.open();
+                } else {
+                    $('#divFromDate').hide();
+                    $('#singleDateDiv').show();
+                    fp.close();
+                }
+            });
+        });
 </script>

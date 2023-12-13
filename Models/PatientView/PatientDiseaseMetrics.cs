@@ -7,7 +7,7 @@
         public string? DiseasesTestName { get; set; }
         public string? Testvalue { get; set; }
         public string? Status { get; set; }
-        public DateTime TestTakenDate { get; set; }
+        public string? TestTakenDate { get; set; }
 
     }
 }

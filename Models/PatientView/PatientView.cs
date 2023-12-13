@@ -8,5 +8,7 @@
         public List<PatientClinicalNotes>? patientClinicalNotes { get; set; }
         public List<PatientMedicalHistory>? patientMedicalHistory { get; set; }
         public List<PatientPrescription>?   patientPrescriptions { get; set; }
+        public DoctorDetails? doctorDetails { get; set;}
+        public ClinicDetails? clinicDetails { get;set; }
     }
 }

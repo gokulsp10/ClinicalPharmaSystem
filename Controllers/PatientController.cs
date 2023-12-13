@@ -116,17 +116,23 @@ namespace ClinicalPharmaSystem.Controllers
         [Authorize(Roles = "Doctor,Admin")]
         public IActionResult ViewPatient(string id)
         {
+            string username = HttpContext.Session.GetString("UserName");
+            string userRole = HttpContext.Session.GetString("Role");
             Request.Query.TryGetValue("id", out var Qid);
             ViewBag.PatientId = Qid;
-            List<PatientModel> patients = patientRepository.ViewPatient(id);
+            ViewBag.UserRole = userRole;
+            PatientView patients = patientRepository.ViewPatient(id, username,DateTime.Now.ToShortDateString(),null);
             return View(patients);
         }
 
         [HttpPost]
-        public IActionResult ViewPatientById(string patientId)
+        public IActionResult ViewPatientById(string patientId, string datepickerFrom,string datepickerTo)
         {
+            string username = HttpContext.Session.GetString("UserName");
+            string userRole = HttpContext.Session.GetString("Role");
             ViewBag.PatientId = patientId;
-            List<PatientModel> patients = patientRepository.ViewPatient(patientId);
+            ViewBag.UserRole = userRole;
+            PatientView patients = patientRepository.ViewPatient(patientId, username, datepickerFrom, datepickerTo);
             return View("ViewPatient", patients);
         }
 
@@ -165,7 +171,7 @@ namespace ClinicalPharmaSystem.Controllers
         }
         public JsonResult CheckPatientExistence(string patientId)
         {
-            List<PatientModel> patients = patientRepository.ViewPatient(patientId);
+            List<PatientModel> patients = patientRepository.ViewPatientExist(patientId);
             var patientExists = patients.Count > 0 ? patients[0].Sex.ToString() : "";
 
             return Json(patientExists);

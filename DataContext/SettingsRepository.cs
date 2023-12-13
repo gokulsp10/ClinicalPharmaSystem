@@ -1,4 +1,5 @@
 ﻿using ClinicalPharmaSystem.Models;
+using ClinicalPharmaSystem.Models.Settings;
 using Dapper;
 using System;
 using System.Collections.Generic;
@@ -223,6 +224,29 @@ public class SettingsRepository
         }
 
         return users;
+    }
+
+    public int doctordetailsUpload(DoctorVerification role)
+    {
+        using (SqlConnection connection = new SqlConnection(connectionString))
+        {
+            connection.Open();
+
+            using (SqlCommand command = new SqlCommand("INSERT INTO Doctors (DoctorName, DoctorId, DoctorStudy, DoctorSpeciality, DoctorContactAddress, ContactMobile, ContactNumber, RegNo) VALUES (@DoctorName, @DoctorId, @DoctorStudy, @DoctorSpeciality, @DoctorContactAddress, @ContactMobile, @ContactNumber, @RegNo)", connection))
+            {
+                command.Parameters.AddWithValue("@DoctorName", role.DoctorName);
+                command.Parameters.AddWithValue("@DoctorId", role.DoctorId);
+                command.Parameters.AddWithValue("@DoctorStudy", role.DoctorStudy);
+                command.Parameters.AddWithValue("@DoctorSpeciality", role.DoctorSpeciality);
+                command.Parameters.AddWithValue("@DoctorContactAddress", role.DoctorContactAddress);
+                command.Parameters.AddWithValue("@ContactMobile", role.ContactMobile);
+                command.Parameters.AddWithValue("@ContactNumber", role.ContactNumber);
+                command.Parameters.AddWithValue("@RegNo", role.RegNo);
+
+                command.ExecuteNonQuery();
+            }
+        }
+        return 1;
     }
 
 }

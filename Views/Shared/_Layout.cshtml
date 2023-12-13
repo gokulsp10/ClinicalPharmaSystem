@@ -155,7 +155,7 @@
                 <!-- Logo in the top left corner -->
                 <div class="col-md-2">
                     <div class="header-logo">
-                        <img src="/Images/nalamLogo.png" alt="Logo" width="90" height="90" />
+                        <img src="/Images/ClinicLogo.ico" alt="Logo" width="90" height="90" />
                     </div>
                 </div>
                 <!-- Quick links for Profile, Login, and Logout -->
@@ -195,97 +195,13 @@
     </header>
     <div class="container-fluid">
         <div class="row">
+            <span id="closeSidebar" style="width:fit-content;height:fit-content;cursor: pointer;z-index:9999" onclick="closeSidebar()">
+                <i class="fas fa-arrow-left"></i> <!-- Font Awesome left arrow icon -->
+            </span>
+            <span id="openSidebar" style="width:fit-content;height:fit-content;z-index:9999;cursor: pointer;display:none" onclick="openSidebar()">
+                <i class="fas fa-arrow-right"></i> <!-- Font Awesome left arrow icon -->
+            </span>
             @await Component.InvokeAsync("Menu")
-            <!-- Sidebar -->
-         @*    <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
-                <div class="position-sticky sidebar-content">
-                    <ul class="nav flex-column">
-                        <!-- Primary menu items with Font Awesome icons -->
-                        <li class="nav-item primary-item">
-                            <a class="nav-link" href="#"><i class="fas fa-tachometer-alt"></i> <span class="nav-link-text">Dashboard</span></a>
-                            <ul class="nav flex-column ml-3">
-                                <!-- Secondary menu items -->
-                                <li class="nav-item secondary-item">
-                                    <a class="nav-link" href="/Dashboard/Clinical">Clinical</a>
-                                </li>
-                                <li class="nav-item secondary-item">
-                                    <a class="nav-link" href="/Dashboard/Patient">Patient</a>
-                                </li>
-                            </ul>
-                        </li>                        
-                        <li class="nav-item has-children primary-item">
-                            <a class="nav-link" href="#"><i class="fas fa-disease"></i> <span class="nav-link-text">Disease</span></a>
-                            <ul class="nav flex-column ml-3">
-                                <!-- Secondary menu items -->
-                                <li class="nav-item secondary-item">
-                                    <a class="nav-link" href="/MedicalTest/AddDisease">Add Disease</a>
-                                </li>
-                                <li class="nav-item secondary-item">
-                                    <a class="nav-link" href="/MedicalTest/ViewEditDisease">View/Edit Disease</a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item has-children primary-item">
-                            <a class="nav-link" href="#"><i class="fas fa-flask"></i> <span class="nav-link-text">Medical Tests</span></a>
-                            <ul class="nav flex-column ml-3">
-                                <!-- Secondary menu items -->
-                                <li class="nav-item secondary-item">
-                                    <a class="nav-link" href="/MedicalTest/AddMedicalTest">Add Test</a>
-                                </li>
-                                <li class="nav-item secondary-item">
-                                    <a class="nav-link" href="/MedicalTest/ViewMedicalTests">View/Edit Test</a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item has-children primary-item">
-                            <a class="nav-link" href="#"><i class="fas fa-user"></i> <span class="nav-link-text">Patient</span></a>
-                            <ul class="nav flex-column ml-3">
-                                <!-- Secondary menu items -->
-                                <li class="nav-item secondary-item">
-                                    <a class="nav-link" href="/Patient/NewPatient">New Patient</a>
-                                </li>
-                                <li class="nav-item secondary-item">
-                                    <a class="nav-link" href="/Patient/AddRecords">Add Records</a>
-                                </li>
-                                <li class="nav-item secondary-item">
-                                    <a class="nav-link" href="/Patient/ViewPatient">View Patient</a>
-                                </li>
-                                <li class="nav-item secondary-item">
-                                    <a class="nav-link" href="#">Edit Patient</a>
-                                </li>
-                                <li class="nav-item secondary-item">
-                                    <a class="nav-link" href="/Patient/AddRecords">Clinical Notes</a>
-                                </li>
-                                <li class="nav-item secondary-item">
-                                    <a class="nav-link" href="/Patient/ViewPatient">Medical History</a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item primary-item">
-                            <a class="nav-link" href="/Appointment/AddAppointment"><i class="fas fa-calendar"></i> <span class="nav-link-text">Appointments</span></a>
-                        </li>
-                        <li class="nav-item has-children primary-item">
-                            <a class="nav-link" href="#"><i class="fas fa-medkit"></i> <span class="nav-link-text">Pharmacy</span></a>
-                            <ul class="nav flex-column ml-3">
-                                <!-- Secondary menu items -->
-                                <li class="nav-item secondary-item">
-                                    <a class="nav-link" href="#">Add</a>
-                                </li>
-                                <li class="nav-item secondary-item">
-                                    <a class="nav-link" href="#">View</a>
-                                </li>
-                                <li class="nav-item secondary-item">
-                                    <a class="nav-link" href="#">Edit</a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item primary-item">
-                            <a class="nav-link" href="#"><i class="fas fa-money-bill"></i> <span class="nav-link-text">Revenue</span></a>
-                        </li>
-                        <!-- Add more primary and secondary menu items as needed -->
-                    </ul>
-                </div>
-            </nav> *@
 
             <!-- Page content -->
             <main style="margin-top: 90px;" class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
@@ -307,6 +223,24 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     @* <script src="~/js/timepicker.js" asp-append-version="true"></script> *@
     <script>
+        function closeSidebar() {            
+            var sidebarContent = document.getElementById("sidebar");
+            sidebarContent.style.setProperty('display', 'none', 'important');
+            var openSidebar = document.getElementById("openSidebar");
+            openSidebar.style.setProperty('display', 'block', 'important');
+
+            var closeSidebar = document.getElementById("closeSidebar");
+            closeSidebar.style.setProperty('display', 'none', 'important');
+        }
+        function openSidebar() {
+            var sidebarContent = document.getElementById("sidebar");
+            sidebarContent.style.setProperty('display', 'block', 'important');
+            var openSidebar = document.getElementById("openSidebar");
+            openSidebar.style.setProperty('display', 'none', 'important');
+
+            var closeSidebar = document.getElementById("closeSidebar");
+            closeSidebar.style.setProperty('display', 'block', 'important');
+        }
         function getFirstLetter(word) {
             // Check if the input is a non-empty string
             if (typeof word === 'string' && word.length > 0) {

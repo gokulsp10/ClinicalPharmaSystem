@@ -1,0 +1,809 @@
+﻿@model ClinicalPharmaSystem.Models.PatientView.ClinicDetails
+<div id="contentToPrint">
+    <div class="container">
+        <h2 style="text-align: center;">Billing</h2>
+        <br /><br />
+        @if (Model.ClinicName != null)
+        {
+            <div class="highlighted-border containerPrint" id="headerDiv">
+                <div style="width:65%;margin-left:20px">
+                    <br><br>
+                    <p>
+                        <img src="/Images/ClinicLogo.ico" alt="Logo" width="120" height="120" /><br>
+                    </p>
+                </div>
+                <div style="width:35%">
+                <br><br>
+                <p>
+                    <strong> @Model.ClinicName Pharmacy</strong><br>
+                    @Model.ClinicContactAddress<br>
+                    @Model.WorkingHours<br>
+                </p>
+            </div>
+            </div>
+            <br />
+        }
+        <div id="PatientInfoNoPrint" class="highlighted-border">
+        <h3>Patient Information</h3>
+        <div class="row">
+            <div class="col-md-3">
+                <label for="PatientName">Patient Name:</label>
+                <div class="form-group">
+                    <input type="text" required autocomplete="off" id="selectPatientNamesearch" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <input style="display:none" type="text" id="PatientNamesearch" disabled class="form-control" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label for="PatientId">Patient Id:</label>
+                <div class="form-group">
+                    <input type="text" required autocomplete="off" disabled id="PatientId" class="form-control" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label for="MobileNo">Mobile Numner:</label>
+                <div class="form-group">
+                    <input type="text" required autocomplete="off" id="MobileNo" class="form-control" />
+                </div>
+            </div>
+            <div style="display:none" id="InvoiceDiv" class="col-md-3">
+                <label for="InvoiceId">Invoice ID:</label>
+                <div class="form-group">
+                    <input type="text" required autocomplete="off" id="InvoiceId" class="form-control" />
+                </div>
+            </div>
+        </div>
+    </div>
+        <div class="highlighted-border" id="patientinfoPrint" style="display:none">
+            <div class="row">
+                <div class="col-md-9">
+                    <label for="PatientName">Patient Name:</label> <label id="PatientNameLabel"></label>
+                </div>               
+                <div class="col-md-3">
+                    <label for="PatientName">Invoice Number:</label> <label id="InvoiceNumberLabel"></label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-9">                    
+                </div>
+                <div class="col-md-3">
+                    <label for="PatientName">Date:</label> <label id="DateLabel"></label>
+                </div>
+            </div>
+        </div>
+    <br />
+    <div id="searchDiv" class="highlighted-border">
+        <h3>Medicine Availability Search</h3>
+        <div class="row">
+            <div class="col-md-3">
+                <label for="MedicineID">Medicine Name:</label>
+                <div class="form-group">
+                    <input type="text" required autocomplete="off" id="selectMedicineNamesearch" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <input style="display:none" type="text" id="MedicineNamesearch" disabled class="form-control" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label for="reqQuantity">Required Quantity:</label>
+                <div class="form-group">
+                    <input type="text" required autocomplete="off" id="reqQuantity" class="form-control" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label for="Discount">Discount:</label>
+                <div class="form-group">
+                    <input type="text" required autocomplete="off" value="10" id="mnlDiscount" class="form-control" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <label for="NumberOfStrips">Available Stock Per Unit/Strip:</label>
+                <div class="form-group">
+                    <input disabled type="text" required autocomplete="off" id="NumberOfStrips" class="form-control" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label for="NumberOfTablets">Total Quantity available:</label>
+                <div class="form-group">
+                    <input disabled type="text" required autocomplete="off" id="NumberOfTablets" class="form-control" />
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <label for="TabletCountPerStrip">Total in one Strip/Unit:</label>
+                <div class="form-group">
+                    <input disabled type="text" required autocomplete="off" id="TabletCountPerStrip" class="form-control" />
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <label for="PricePerStrip">Price Per Strip/Unit:</label>
+                <div class="form-group">
+                    <input disabled type="text" required autocomplete="off" id="PricePerStrip" class="form-control" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <label for="Container">Storage Container:</label>
+                <div class="form-group">
+                    <input disabled type="text" required autocomplete="off" id="Container" class="form-control" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label for="Strength">Strength / Composition:</label>
+                <div class="form-group">
+                    <textarea disabled required autocomplete="off" id="Strength" class="form-control"></textarea>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label for="ExpiryDate">Expiry Date:</label>
+                <div class="form-group">
+                    <input disabled type="text" required autocomplete="off" id="ExpiryDate" class="form-control" />
+                </div>
+            </div>
+        </div>
+        <div class="position-fixed top-0 end-0 p-3" id="toastContainer">
+            <div id="outofStockToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000" style="z-index: 1000;">
+                <div style="background-color:red;color:black" class="toast-header">
+                    <strong class="me-auto">Warning</strong>
+                    <small>Just now</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    Patient asking medicine count is out of stock.
+                </div>
+            </div>
+        </div>
+        <div class="position-fixed top-0 end-0 p-3" id="toastContainer">
+            <div id="MandatoryToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000" style="z-index: 1000;">
+                <div style="background-color:red;color:black" class="toast-header">
+                    <strong class="me-auto">Warning</strong>
+                    <small>Just now</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    Medicine name, Required Quantity, and Discount are mandatory fields.
+                </div>
+            </div>
+        </div>
+            <div class="position-fixed top-0 end-0 p-3" id="toastContainer">
+                <div id="BillingToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000" style="z-index: 1000;">
+                    <div style="background-color:green;color:black" class="toast-header">
+                        <strong class="me-auto">Warning</strong>
+                        <small>Just now</small>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body">
+                        Billing Details saved successfully.
+                    </div>
+                </div>
+            </div>
+        <button class="btn btn-primary mb-2" id="addRowBtn">Add Item</button>
+        <button class="btn btn-primary mb-2" id="paymentbtn">Add Payment</button>
+        <button class="btn btn-primary mb-2" id="clearEntry">Clear Entry</button>
+    </div>
+    <br />
+    <div class="highlighted-border">
+        <h3>Billing List</h3>
+    <table id="medicineTable" class="table table-bordered">
+        <thead>
+            <tr>
+                <th>S No</th>
+                <th>Medicine Name</th>
+                <th>Quantity</th>
+                <th>Expiry Date</th>
+                <th>MRP / Unit</th>
+                <th>GST</th>
+                <th>Discount</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+        <tfoot>
+            <tr>
+                <td colspan="7"></td>
+                <td id="grandTotal"></td>
+            </tr>
+        </tfoot>
+        </table>
+    </div><br />
+    <div id="paymentOption" class="highlighted-border" style="display: none;">
+        <h3>Payment Details</h3>
+        <div class="row">
+            <div class="col-md-3">
+                <label for="BillDate">Bill Date:</label>
+                <div class="form-group">
+                    <input type="text" required autocomplete="off" id="BillDate" class="form-control" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label for="ModeOfPayment">Mode Of Payment:</label>
+                <div class="form-group">
+                    <select id="ModeOfPayment" class="form-control" required>
+                        <option value="" selected disabled>Select Payment</option>
+                        <option value="Cash">Cash</option>
+                        <option value="GPay">GPay</option>
+                        <option value="PhonePay">PhonePay</option>
+                        <option value="CreditCard">Credit Card</option>
+                        <option value="DebitCard">Debit Card</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <label for="BillAmount">Bill Amount:</label>
+                <div class="form-group">
+                    <input type="text" required autocomplete="off" id="BillAmount" class="form-control" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label for="Comments">Comments:</label>
+            <div class="form-group">
+                    <input type="text" required autocomplete="off" id="Comments" class="form-control" />
+            </div>
+            </div>
+        </div>
+        <button class="btn btn-primary mb-2" id="saveBtn">Save</button>
+            <button class="btn btn-primary mb-2" id="rollBack" style="display: none;">Rollback Transaction</button>
+            <button class="btn btn-primary mb-2" id="printbtn" onclick="printDivContent()" style="display: none;">Print</button>
+            <button class="btn btn-primary mb-2" id="newBillbtn" style="display: none;">New Bill</button>
+    </div>
+</div>
+</div>
+    <style>
+    .containerPrint {
+            display: flex;
+        }
+        .highlighted-border {
+            border: 2px solid #3498db; 
+            padding: 10px; 
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tfoot {
+            font-weight: bold;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/billPrint.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+<script>    
+    document.getElementById('rollBack').addEventListener('click', function () {
+        var rollbackValue = 'Yes';
+        // AJAX call to send data to controller action
+        $.ajax({
+            type: 'POST',
+            url: '/Pharmacy/UpdateMedicineCount?Rollback=' + rollbackValue,
+            data: JSON.stringify(formattedmedData),
+            contentType: 'application/json',
+            success: function (response) {
+                // Handle success response
+                console.log(response);
+            },
+            error: function (xhr, status, error) {
+                // Handle error
+                console.error('Error:', error);
+            }
+        });
+
+    });
+    document.getElementById('newBillbtn').addEventListener('click', function () {
+        document.getElementById('selectMedicineNamesearch').value = '';
+        document.getElementById('reqQuantity').value = '';
+        document.getElementById('NumberOfStrips').value = '';
+        document.getElementById('NumberOfTablets').value = '';
+        document.getElementById('TabletCountPerStrip').value = '';
+        document.getElementById('PricePerStrip').value = '';
+        document.getElementById('Container').value = '';
+        document.getElementById('Strength').value = '';
+        document.getElementById('ExpiryDate').value = '';
+        $('#medicineTable tbody').empty();
+        document.getElementById('selectPatientNamesearch').value = '';
+        document.getElementById('PatientId').value = '';
+        document.getElementById('MobileNo').value = '';
+        document.getElementById('InvoiceId').value = '';
+        localStorage.removeItem('medicineData');
+        localStorage.removeItem('InvoiceId');
+        localStorage.removeItem('PatientInfo');
+        localStorage.removeItem('PatientBillingInfo');
+        document.getElementById('BillDate').value = '';
+        document.getElementById('Select Payment').value = '';
+        document.getElementById('BillAmount').value = '';
+        document.getElementById('Comments').value = '';
+
+    });
+
+    document.getElementById('saveBtn').addEventListener('click', function () {
+        // Show the print button when the save button is clicked
+        document.getElementById('printbtn').style.display = 'inline-block'; 
+        document.getElementById('newBillbtn').style.display = 'inline-block'; 
+        document.getElementById('rollBack').style.display = 'inline-block';
+        var deleteButtons = document.querySelectorAll('.deleteBtn');
+
+        // Loop through each delete button and hide it
+        deleteButtons.forEach(function (button) {
+            button.style.display = 'none'; // or button.style.visibility = 'hidden'; if you want to maintain space
+        });
+        var medicineData = JSON.parse(localStorage.getItem('medicineData')) || [];
+        var formattedmedData = medicineData.map(function (item) {
+            return {
+                MedicineID: item.medicineID,
+                MedicineName: item.medicineName,
+                Quantity: parseInt(item.quantity)
+            };
+        });
+
+        var billDate = document.getElementById('BillDate').value;
+        var modeOfPayment = document.getElementById('ModeOfPayment').value;
+        var billAmount = document.getElementById('BillAmount').value;
+        var comments = document.getElementById('Comments').value;
+
+        // Create an object to hold the data
+        var billData = {
+            "SaleId": 0,
+            "ModeOfPayment": modeOfPayment,
+            "SaleAmount": billAmount.replace(/₹/g, ""),
+            "BillDate": billDate,
+            "CreatedBy":"",
+            "Comments": comments
+        };
+
+        var jsonbillData = [];
+        jsonbillData.push(billData);
+        var rollbackValue = 'No';
+        // AJAX call to send data to controller action
+        $.ajax({
+            type: 'POST',
+            url: '/Pharmacy/UpdateMedicineCount?Rollback=' + rollbackValue,
+            data: JSON.stringify(formattedmedData),
+            contentType: 'application/json',
+            success: function (response) {
+                // Handle success response
+                console.log(response);
+            },
+            error: function (xhr, status, error) {
+                // Handle error
+                console.error('Error:', error);
+            }
+        });
+
+        // AJAX call to send data to controller action
+        $.ajax({
+            type: 'POST',
+            url: '/Pharmacy/InsertPurchaseSales',
+            data: JSON.stringify(jsonbillData),
+            contentType: 'application/json',
+            success: function (response) {
+                // Handle success response
+                console.log(response);
+                localStorage.setItem('InvoiceId', response.message);
+                insertPurcahsemedicineInfo();
+            },
+            error: function (xhr, status, error) {
+                // Handle error
+                console.error('Error:', error);
+            }
+        });
+        document.getElementById('InvoiceDiv').style.display = 'inline-block';        
+                
+    });
+
+    function insertPurcahsemedicineInfo() {
+        var PatientBillingInfo = JSON.parse(localStorage.getItem('PatientBillingInfo')) || [];
+        var InvoiceId = localStorage.getItem('InvoiceId') || '';
+        var formattedmedPatientBillingInfo = PatientBillingInfo.map(function (item) {
+            return {
+                MedicineID: item.medicineID,
+                MedicineName: item.medicineName,
+                MrpPerUnit: item.mrpPerUnit,
+                PurchasedQuantity: item.quantity,
+                Discount: item.Discount,
+                GST: item.GST,
+                Total: item.Total,
+                ExpiryDate: item.expDate,
+                InvoiceID: InvoiceId
+            };
+        });
+        // AJAX call to send data to controller action
+        $.ajax({
+            type: 'POST',
+            url: '/Pharmacy/InsertPurchasemedicineInfo',
+            data: JSON.stringify(formattedmedPatientBillingInfo),
+            contentType: 'application/json',
+            success: function (response) {
+                insertPurchaseInfo();
+                console.log('Data sent successfully:', response);
+            },
+            error: function (xhr, status, error) {
+                // Handle error
+                console.error('Error:', error);
+            }
+        });
+    }
+
+    function insertPurchaseInfo(){
+        var InvoiceId = localStorage.getItem('InvoiceId') || '';
+        document.getElementById('InvoiceId').value = 'INV'+InvoiceId;
+        document.getElementById('PatientNameLabel').innerText = document.getElementById('selectPatientNamesearch').value;
+        document.getElementById('InvoiceNumberLabel').innerText = 'INV' + InvoiceId;
+        document.getElementById('DateLabel').innerText = document.getElementById('BillDate').value;
+
+        var PatientInfo = JSON.parse(localStorage.getItem('PatientInfo')) || [];
+        var formattedmedPatientInfo = PatientInfo.map(function (item) {
+            return {
+                PatientID: item.patientID,
+                PatientName: item.patientName,
+                MobileNo: item.mobileNo,
+                InvoiceID: InvoiceId
+            };
+        });
+        // AJAX call to send data to controller action
+        $.ajax({
+            type: 'POST',
+            url: '/Pharmacy/InsertPurchasePatientInfo',
+            data: JSON.stringify(formattedmedPatientInfo),
+            contentType: 'application/json',
+            success: function (response) {
+                // Handle success response
+                $('#BillingToast').toast('show');
+                console.log('Data sent successfully:', response);
+            },
+            error: function (xhr, status, error) {
+                // Handle error
+                console.error('Error:', error);
+            }
+        });
+    }
+</script>
+    <script>
+    $(document).ready(function () {
+        flatpickr("#BillDate", {
+            defaultDate: "today", // Set the default date to today
+            dateFormat: "d-m-Y"   // Set date format to "date-month-year"
+        });
+        $('#paymentbtn').click(function () {
+            
+            $('#paymentOption').toggle(); // Toggle the visibility of the div
+        });
+        //clearEntry
+        $('#clearEntry').click(function () {
+            clearAvailSearch();
+        });
+        function clearAvailSearch(){
+            document.getElementById('selectMedicineNamesearch').value = '';
+            document.getElementById('reqQuantity').value = '';
+            document.getElementById('NumberOfStrips').value = '';
+            document.getElementById('NumberOfTablets').value = '';
+            document.getElementById('TabletCountPerStrip').value = '';
+            document.getElementById('PricePerStrip').value = '';
+            document.getElementById('Container').value = '';
+            document.getElementById('Strength').value = '';
+            document.getElementById('ExpiryDate').value = '';
+        }
+        var rowCount = 0;
+        
+        $('#addRowBtn').click(function () {
+            rowCount++;
+            var medicineID = $('#MedicineNamesearch').val();
+            var patientName = $('#selectPatientNamesearch').val();
+            var patientID = $('#PatientId').val();
+            var mobileNo = $('#MobileNo').val();
+            var mnlDiscount = $('#mnlDiscount').val();
+            var medicineName = $('#selectMedicineNamesearch').val();
+            var quantity = $('#reqQuantity').val();
+            var discount = mnlDiscount / 100; // 10% discount
+            if (medicineName.trim() === '' || quantity.trim() === '' || mnlDiscount.trim() === '') {
+                $('#MandatoryToast').toast('show');
+                return;
+            }
+            // Capture values from input fields
+            var medicineName = $('#selectMedicineNamesearch').val();
+            var quantity = $('#reqQuantity').val();
+            var expiryDate = $('#ExpiryDate').val();
+            var mrp = $('#PricePerStrip').val();
+            var tabletCountPerStrip = $('#TabletCountPerStrip').val();          
+
+            // Calculate discount and total
+            var priceOfSingleTablet = mrp / tabletCountPerStrip;
+            var totalQuantityPrice = quantity * priceOfSingleTablet;
+            var discountedMRP = totalQuantityPrice - (totalQuantityPrice * discount);
+            var gst = discountedMRP * 0.18; // Assuming a 18% GST rate in India
+            var total = discountedMRP + gst;
+
+            // Store medicine ID and quantity in localStorage
+            var medData = JSON.parse(localStorage.getItem('medicineData')) || [];
+            medData.push({ medicineID: medicineID, medicineName: medicineName, quantity: quantity });
+            localStorage.setItem('medicineData', JSON.stringify(medData));
+
+            // Store patient billing info in localStorage
+            var PatientInfo = JSON.parse(localStorage.getItem('PatientInfo')) || [];
+            if (PatientInfo == [] || PatientInfo.length == 0) {
+                PatientInfo.push({ patientID: patientID, patientName: patientName, mobileNo: mobileNo });
+                localStorage.setItem('PatientInfo', JSON.stringify(PatientInfo));
+            }
+            // Store patient billing info in localStorage
+            var patientBillingInfo = JSON.parse(localStorage.getItem('PatientBillingInfo')) || [];
+            patientBillingInfo.push({
+                patientID: patientID,
+                mobileNo: mobileNo,
+                medicineID: medicineID,
+                medicineName: medicineName,
+                quantity: quantity,
+                expDate: expiryDate,
+                mrpPerUnit: mrp,
+                GST: gst.toFixed(2),
+                Discount: (discount * 100) + '%',
+                Total: total.toFixed(2)
+            });
+            localStorage.setItem('PatientBillingInfo', JSON.stringify(patientBillingInfo));
+
+            // Create a new row with the captured values and calculated values for GST and discount
+            var newRow = '<tr>' +
+                '<td>' + rowCount + '</td>' +
+                '<td contenteditable="true" style="width:300px">' + medicineName + '</td>' +
+                '<td contenteditable="true">' + quantity + '</td>' +
+                '<td contenteditable="true">' + expiryDate + '</td>' +
+                '<td contenteditable="true">' + mrp + '</td>' +
+                '<td class="gst">₹' + gst.toFixed(2) + '</td>' +
+                '<td class="discount">' + (discount * 100) + '%</td>' +
+                '<td class="total">₹' + total.toFixed(2) + '</td>' +
+                '<td><button class="deleteBtn"><i class="fa fa-trash" style="color:red"></i></button></td>' +
+                '</tr>';
+
+            $('#medicineTable tbody').append(newRow);
+            calculateGrandTotal();
+            document.getElementById('MedicineNamesearch').value = '';
+            document.getElementById('selectMedicineNamesearch').value = '';
+            document.getElementById('reqQuantity').value = '';
+            document.getElementById('NumberOfStrips').value = '';
+            document.getElementById('NumberOfTablets').value = '';
+            document.getElementById('TabletCountPerStrip').value = '';
+            document.getElementById('PricePerStrip').value = '';
+            document.getElementById('Container').value = '';
+            document.getElementById('Strength').value = '';
+            document.getElementById('ExpiryDate').value = '';
+        });
+
+        // Delete row when delete button is clicked
+        $('#medicineTable').on('click', '.deleteBtn', function () {
+            $(this).closest('tr').remove();
+            calculateGrandTotal();
+        });
+
+        function calculateGrandTotal() {
+            var grandTotal = 0;
+
+            $('.total').each(function () {
+                grandTotal += parseFloat($(this).text().replace('₹', ''));
+            });
+            $('#BillAmount').val('₹' + grandTotal.toFixed(2))
+            $('#grandTotal').text('Grand Total: ₹' + grandTotal.toFixed(2));
+        }
+    });
+
+
+    </script>
+<script>
+    var map = {}; // Declare map globally
+
+    $("#selectMedicineNamesearch").typeahead({
+        minLength: 1,
+        source: function (request, response) {
+            document.getElementById('reqQuantity').value = '';
+            document.getElementById('NumberOfStrips').value = '';
+            document.getElementById('NumberOfTablets').value = '';
+            document.getElementById('TabletCountPerStrip').value = '';
+            document.getElementById('PricePerStrip').value = '';
+            document.getElementById('Container').value = '';
+            document.getElementById('Strength').value = '';
+            document.getElementById('ExpiryDate').value = '';
+            $.ajax({
+                url: "/Pharmacy/GetMedicineByName",
+                data: {
+                    "term": request
+                },
+                type: "GET",
+                contentType: "json",
+                success: function (data) {
+                    var items = [];
+
+                    if (Array.isArray(data)) {
+                        // Extract disease names from the objects and create an array of strings
+                        items = data.map(function (item) {
+                            return item.medicineName;
+                        });
+
+                        map = {}; // Update the map for array responses
+                        data.forEach(function (item) {                            
+                            var id = item.medicineID;
+                            var name = item.medicineName;
+                            var container = item.container;
+                            var tabletCountPerStrip = item.tabletCountPerStrip;
+                            var expiryDate = item.expiryDate;
+                            var strengths = item.strengths;
+                            var numberOfStrips = item.numberOfStrips;
+                            var numberOfTablets = item.numberOfTablets;
+                            var pricePerStrip = item.pricePerStrip;
+                            var tabletCountPerStrip = item.tabletCountPerStrip;
+                            map[name] = {
+                                id: id,
+                                name: name,
+                                container: container,
+                                tabletCountPerStrip: tabletCountPerStrip,
+                                expiryDate: expiryDate,
+                                strengths: strengths,
+                                numberOfStrips:numberOfStrips,
+                                numberOfTablets: numberOfTablets,
+                                pricePerStrip: pricePerStrip,
+                                tabletCountPerStrip: tabletCountPerStrip
+                            };
+                        });
+                    } else if (typeof data === 'object') {
+                        // Handle a single object
+                        items.push(data.medicineName);
+                        map = {}; // Update the map for single object response
+                        var id = data.medicineID;
+                        var name = data.medicineName;
+                        var container = data.container;
+                        var tabletCountPerStrip = data.tabletCountPerStrip;
+                        var expiryDate = data.expiryDate;
+                        var strengths = data.strengths;
+                        var numberOfStrips = data.numberOfStrips;
+                        var numberOfTablets = data.numberOfTablets;
+                        var pricePerStrip = data.pricePerStrip;
+                        var tabletCountPerStrip = item.tabletCountPerStrip;
+                        map[name] = {
+                            id: id,
+                            name: name,
+                            container: container,
+                            tabletCountPerStrip: tabletCountPerStrip,
+                            expiryDate: expiryDate,
+                            strengths: strengths,
+                            numberOfStrips: numberOfStrips,
+                            numberOfTablets: numberOfTablets,
+                            pricePerStrip: pricePerStrip,
+                            tabletCountPerStrip: tabletCountPerStrip
+                        };
+                    }
+
+                    response(items);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        },
+        updater: function (item) {
+            if (map[item]) {
+                $("#MedicineNamesearch").val(map[item].id);
+                $("#NumberOfTablets").val(map[item].numberOfTablets);
+                $("#NumberOfStrips").val(map[item].numberOfStrips);
+                $("#Container").val(map[item].container);
+                $("#PricePerStrip").val(map[item].pricePerStrip);
+                $("#Strength").val(map[item].strengths);
+                const expiryDate = formatDate(map[item].expiryDate);
+                $("#ExpiryDate").val(expiryDate);
+                $("#TabletCountPerStrip").val(map[item].tabletCountPerStrip);
+            }
+            return item;
+        }
+    });
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+    }
+</script>
+
+<script>
+    var map = {}; // Declare map globally
+
+    $("#selectPatientNamesearch").typeahead({
+        minLength: 1,
+        source: function (request, response) {
+            document.getElementById('PatientId').value = '';
+            document.getElementById('MobileNo').value = '';
+            $.ajax({
+                url: "/Pharmacy/GetPatienDetailsById",
+                data: {
+                    "term": request
+                },
+                type: "GET",
+                contentType: "json",
+                success: function (data) {
+                    var items = [];
+
+                    if (Array.isArray(data)) {
+                        // Extract disease names from the objects and create an array of strings
+                        items = data.map(function (item) {
+                            return item.patientName;
+                        });
+
+                        map = {}; // Update the map for array responses
+                        data.forEach(function (item) {
+                            var id = item.patientId;
+                            var name = item.patientName;
+                            var mobile = item.mobileNo;
+                            map[name] = {
+                                id: id,
+                                name: name,
+                                mobile: mobile
+                            };
+                        });
+                    } else if (typeof data === 'object') {
+                        // Handle a single object
+                        items.push(data.patientName);
+                        map = {}; // Update the map for single object response
+                        var id = data.patientId;
+                        var name = data.patientName;
+                        var mobile = item.mobileNo;
+                        map[name] = {
+                            id: id,
+                            name: name,
+                            mobile: mobile
+                        };
+                    }
+
+                    response(items);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        },
+        updater: function (item) {
+            if (map[item]) {
+                // Check if the item exists in the map
+                $("#PatientId").val(map[item].id);
+                $("#MobileNo").val(map[item].mobile);
+            }
+            return item;
+        }
+    });
+</script>
+<script>
+    $('#reqQuantity').on('input', function () {
+        var requiredQuantity = parseFloat($(this).val());
+        var availableQuantity = parseFloat($('#NumberOfTablets').val());
+
+        if (requiredQuantity > availableQuantity) {
+            // Show a toast message indicating medicine out of stock
+            // You might need to adjust the toast display method based on the library you're using
+            // For example, if you're using Bootstrap, you can utilize its toast component
+            // Here's a generic example:
+            $('#outofStockToast').toast('show'); // Display the toast
+            $('#reqQuantity').val('');
+        }
+    });
+</script>

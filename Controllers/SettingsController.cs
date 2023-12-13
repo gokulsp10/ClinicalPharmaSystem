@@ -1,4 +1,5 @@
 ﻿using ClinicalPharmaSystem.Models;
+using ClinicalPharmaSystem.Models.Settings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
@@ -65,6 +66,8 @@ namespace ClinicalPharmaSystem.Controllers
             settingsRepository.UpdateRole(role);
             return Json(new { success = true, message = "Role updated successfully" });
         }
+
+        [HttpPost]
         public IActionResult UpdateUserStatus(User user) 
         {
             bool updatesStatus = settingsRepository.UpdateUser(user);
@@ -87,5 +90,13 @@ namespace ClinicalPharmaSystem.Controllers
             // Return a response if needed
             return Json(new { success = true, message = "Medical tests submitted successfully" });
         }
+
+        [HttpPost]
+        public ActionResult doctordetailsUpload([FromBody] DoctorVerification doctorVerification)
+        {
+            settingsRepository.doctordetailsUpload(doctorVerification);
+            return Json(new { success = true, message = "Data received successfully!" });
+        }
+
     }
 }

@@ -75,6 +75,7 @@ namespace ClinicalPharmaSystem.Controllers
                     HttpContext.Session.SetString("LoginSuccessMessage", "Success");
                     HttpContext.Session.SetString("UserName", user.UserName);
                     HttpContext.Session.SetString("Email", user.Email);
+                    HttpContext.Session.SetString("Role", user.RoleName);
                     HttpContext.Session.SetString("Initial", !string.IsNullOrEmpty(user.UserName) ? user.UserName[0].ToString() : "");
                     // Redirect to the desired page after successful login
                     if(user.RoleName == "Admin")
@@ -91,7 +92,7 @@ namespace ClinicalPharmaSystem.Controllers
                     }
                     else if (user.RoleName == "Pharmacy")
                     {
-                        return RedirectToAction("PharmacyMetrics", "Pharmacy");
+                        return RedirectToAction("AddnewBill", "Pharmacy");
                     }
 
                 }

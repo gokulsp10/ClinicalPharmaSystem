@@ -1,0 +1,359 @@
+﻿@using ClinicalPharmaSystem.Models.Pharmacy;
+@model List<MedicineSupplier>
+<h2>Clinical Notes</h2>
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="add-tab" data-bs-toggle="tab" data-bs-target="#add" type="button" role="tab" aria-controls="add" aria-selected="true">Add Supplier</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="view-edit-tab" onclick="GetSupplierData()" data-bs-toggle="tab" data-bs-target="#view-edit" type="button" role="tab" aria-controls="view-edit" aria-selected="false">View/Edit Supplier</button>
+    </li>
+</ul>
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="add" role="tabpanel" aria-labelledby="add-tab">
+        <!-- Add Supplier Form -->
+        <h1>Add Medicine Supplier</h1>
+        <!-- Bootstrap CSS -->
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+        <form id="supplierForm">
+            <div class="form-group">
+                <label for="supplierName">Supplier Name:</label>
+                <input type="text" style="width:400px" class="form-control" id="supplierName" name="SupplierName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="contactPerson">Contact Person:</label>
+                <input type="text" style="width:400px" class="form-control" id="contactPerson" name="ContactPerson" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" style="width:400px" class="form-control" id="email" name="Email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone:</label>
+                <input type="text" style="width:400px" class="form-control" id="phone" name="Phone" required>
+            </div>
+
+            <div class="form-group">
+                <label for="address">Address:</label>
+                <textarea style="width:400px;height:100px" class="form-control" id="address" name="Address" required></textarea>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="submitForm()">Submit</button>
+        </form>
+
+        <div class="position-fixed bottom-0 end-0 p-3" id="toastContainer">
+            <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
+                <div class="toast-header">
+                    <strong class="me-auto">Success</strong>
+                    <small>Just now</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    Supplier added successfully!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane fade" id="view-edit" role="tabpanel" aria-labelledby="view-edit-tab">
+        <!-- View/Edit Supplier Content -->
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Supplier Name</th>
+                    <th>Contact Person</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Address</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="supplierTableBody">
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var supplier in Model)
+                    {
+                        <tr>
+                            <td>@supplier.SupplierID</td>
+                            <td>@supplier.SupplierName</td>
+                            <td>@supplier.ContactPerson</td>
+                            <td>@supplier.Email</td>
+                            <td>@supplier.Phone</td>
+                            <td>@supplier.Address</td>
+                            <td>
+                                <button class="btn btn-primary update-btn">Update</button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7">No suppliers available</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+
+        <div class="position-fixed top-0 end-0 p-3" id="toastContainer">
+            <div id="updateToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000" style="z-index: 1000;">
+                <div style="background-color:green;color:black" class="toast-header">
+                    <strong class="me-auto">Success</strong>
+                    <small>Just now</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    Supplier data updated.
+                </div>
+            </div>
+        </div>
+        <div class="position-fixed top-0 end-0 p-3" id="toastContainer">
+            <div id="deleteToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000" style="z-index: 1000;">
+                <div style="background-color:green;color:black" class="toast-header">
+                    <strong class="me-auto">Success</strong>
+                    <small>Just now</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    Selected Supplier deleted successfully.
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    function submitForm() {
+        var form = document.getElementById('supplierForm');
+        var formData = new FormData(form);
+
+        // Send the form data to the controller action method using AJAX
+        $.ajax({
+            url: '/Pharmacy/SaveSupplier', // Replace with your controller route
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                $('#successToast').toast('show');
+            },
+            error: function (error) {
+                // Handle error
+                console.log(error);
+            }
+        });
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        // Update button click event
+        $('#supplierTableBody').on('click', '.update-btn', function () {
+            var row = $(this).closest('tr');
+            var SupplierID = row.find('td:eq(0)').text();
+            var SupplierName = document.getElementById("supplierName_" + SupplierID).value;
+            var ContactPerson = document.getElementById("contactPerson_" + SupplierID).value;
+            var Email = document.getElementById("email_" + SupplierID).value;
+            var Phone = document.getElementById("phone_" + SupplierID).value;
+            var Address = document.getElementById("address_" + SupplierID).value;
+
+            var url = '/Pharmacy/UpdateSupplierData?' +
+                'SupplierID=' + SupplierID +
+                '&SupplierName=' + encodeURIComponent(SupplierName)+
+                '&ContactPerson=' + encodeURIComponent(ContactPerson) +
+                '&Email=' + encodeURIComponent(Email) +
+                '&Phone=' + encodeURIComponent(Phone) +
+                '&Address=' + encodeURIComponent(Address) +
+                '&flag=' + encodeURIComponent('update');
+
+            $.ajax({
+                url: url,
+                method: 'POST',
+                success: function (response) {
+                    GetSupplierData();
+                    var successToast = new bootstrap.Toast(document.getElementById("updateToast"));
+                    successToast.show();
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    });
+
+
+</script>
+<script>
+    $(document).ready(function () {
+        // delete button click event
+        $('#supplierTableBody').on('click', '.delete-btn', function () {
+            var row = $(this).closest('tr');
+            var SupplierID = row.find('td:eq(0)').text();
+            var SupplierName = '';
+            var ContactPerson = '';
+            var Email = '';
+            var Phone = '';
+            var Address = '';
+
+            var url = '/Pharmacy/UpdateSupplierData?' +
+                'SupplierID=' + SupplierID +
+                '&SupplierName=' + encodeURIComponent(SupplierName) +
+                '&ContactPerson=' + encodeURIComponent(ContactPerson) +
+                '&Email=' + encodeURIComponent(Email) +
+                '&Phone=' + encodeURIComponent(Phone) +
+                '&Address=' + encodeURIComponent(Address) +
+                '&flag=' + encodeURIComponent('delete');
+
+            // Append more parameters if needed in the URL
+
+            $.ajax({
+                url: url,
+                method: 'POST',
+                success: function (response) {
+                    GetSupplierData();
+                    var successToast = new bootstrap.Toast(document.getElementById("deleteToast"));
+                    successToast.show();
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    });
+
+
+</script>
+
+<script>
+    function updateSupplierTable(supplierList) {
+        var tableBody = document.getElementById('supplierTableBody');
+
+        if (supplierList && supplierList.length > 0) {
+            // Clear existing table rows
+            tableBody.innerHTML = '';
+
+            // Populate table with new data
+            supplierList.forEach(function (supplier) {
+                var row = document.createElement('tr');
+
+                // Create table cells and populate data with input elements
+                var supplierIdCell = document.createElement('td');
+                supplierIdCell.textContent = supplier.SupplierID;
+                row.appendChild(supplierIdCell);
+
+                var supplierNameCell = document.createElement('td');
+                var supplierNameInput = document.createElement('input');
+                supplierNameInput.type = 'text';
+                supplierNameInput.value = supplier.SupplierName;
+                supplierNameInput.id = 'supplierName_' + supplier.SupplierID; // Unique ID for SupplierName input
+                supplierNameInput.classList.add('form-control'); // Bootstrap form control class
+                supplierNameCell.appendChild(supplierNameInput);
+                row.appendChild(supplierNameCell);
+
+                var contactPersonCell = document.createElement('td');
+                var contactPersonInput = document.createElement('input');
+                contactPersonInput.type = 'text';
+                contactPersonInput.value = supplier.ContactPerson;
+                contactPersonInput.id = 'contactPerson_' + supplier.SupplierID; // Unique ID for ContactPerson input
+                contactPersonInput.classList.add('form-control');
+                contactPersonCell.appendChild(contactPersonInput);
+                row.appendChild(contactPersonCell);
+
+                var emailCell = document.createElement('td');
+                var emailInput = document.createElement('input');
+                emailInput.type = 'email';
+                emailInput.value = supplier.Email;
+                emailInput.id = 'email_' + supplier.SupplierID; // Unique ID for Email input
+                emailInput.classList.add('form-control');
+                emailCell.appendChild(emailInput);
+                row.appendChild(emailCell);
+
+                var phoneCell = document.createElement('td');
+                var phoneInput = document.createElement('input');
+                phoneInput.type = 'text';
+                phoneInput.value = supplier.Phone;
+                phoneInput.id = 'phone_' + supplier.SupplierID; // Unique ID for Phone input
+                phoneInput.classList.add('form-control');
+                phoneCell.appendChild(phoneInput);
+                row.appendChild(phoneCell);
+
+                var addressCell = document.createElement('td');
+                var addressTextarea = document.createElement('textarea');
+                addressTextarea.value = supplier.Address;
+                addressTextarea.id = 'address_' + supplier.SupplierID; // Unique ID for Address textarea
+                addressTextarea.classList.add('form-control');
+                addressCell.appendChild(addressTextarea);
+                row.appendChild(addressCell);
+
+                var actionCell = document.createElement('td');
+
+                var updateBtn = document.createElement('button');
+                updateBtn.textContent = 'Update';
+                updateBtn.classList.add('btn', 'btn-primary', 'update-btn');
+                actionCell.appendChild(updateBtn);
+
+                var deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.classList.add('btn', 'btn-danger', 'delete-btn');
+                actionCell.appendChild(deleteBtn);
+
+                row.appendChild(actionCell);
+
+                tableBody.appendChild(row);
+            });
+        } else {
+            // Show message when no suppliers available
+            tableBody.innerHTML = '<tr><td colspan="7">Suppliers data not available</td></tr>';
+        }
+    }
+
+</script>
+
+<script>
+    function GetSupplierData() {
+        var xhr = new XMLHttpRequest();
+
+        // Define the endpoint URL, assuming it's '/Patient/GetClinicalNotes'
+        var url = '/Pharmacy/GetSupplierData';
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    // Request successful, handle the response
+                    var clinicalNotes = JSON.parse(xhr.responseText);
+                    var mappedData = clinicalNotes.map(item => {
+                        return {
+                            SupplierID: item.supplierID,
+                            SupplierName: item.supplierName,
+                            ContactPerson: item.contactPerson,
+                            Email: item.email,
+                            Phone: item.phone,
+                            Address: item.address
+                        };
+                    });
+                    console.log(clinicalNotes);
+                    console.log(mappedData);
+                    updateSupplierTable(mappedData);
+                } else {
+                    // Request failed, handle errors
+                    console.error('Request failed with status:', xhr.status);
+                }
+            }
+        };
+
+        xhr.open('GET', url, true);
+        xhr.send();
+    }
+</script>

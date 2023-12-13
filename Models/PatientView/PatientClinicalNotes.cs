@@ -5,6 +5,6 @@
         public string? PatientId { get; set; }
         public string? ClinicalNotesText { get; set; }
 
-        public DateTime ClinicalNotesVisitDate { get; set; }
+        public string? ClinicalNotesVisitDate { get; set; }
     }
 }

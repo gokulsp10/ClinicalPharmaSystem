@@ -1,0 +1,274 @@
+﻿@using ClinicalPharmaSystem.Models.Pharmacy;
+@model List<MedicineCategory>
+<h2>Medicine Category</h2>
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="add-tab" data-bs-toggle="tab" data-bs-target="#add" type="button" role="tab" aria-controls="add" aria-selected="true">Add Medicine Category</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="view-edit-tab" onclick="GetMedicineCategory()" data-bs-toggle="tab" data-bs-target="#view-edit" type="button" role="tab" aria-controls="view-edit" aria-selected="false">View/Edit Medicine Category</button>
+    </li>
+</ul>
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="add" role="tabpanel" aria-labelledby="add-tab">
+        <!-- Add CategoryName Form -->
+        <h1>Add Medicine Category</h1>
+        <!-- Bootstrap CSS -->
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+        <form id="categoryForm">
+            <div class="form-group">
+                <label for="CategoryName">Category Name:</label>
+                <input type="text" style="width:400px" class="form-control" id="CategoryName" name="CategoryName" required>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="submitForm()">Submit</button>
+        </form>
+
+        <div class="position-fixed bottom-0 end-0 p-3" id="toastContainer">
+            <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
+                <div class="toast-header">
+                    <strong class="me-auto">Success</strong>
+                    <small>Just now</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    Category added successfully!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane fade" id="view-edit" role="tabpanel" aria-labelledby="view-edit-tab">
+        <!-- View/Edit Supplier Content -->
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Category Name</th>
+                </tr>
+            </thead>
+            <tbody id="CategoryTableBody">
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var supplier in Model)
+                    {
+                        <tr>
+                            <td>@supplier.CategoryID</td>
+                            <td>@supplier.CategoryName</td>
+                            <td>
+                                <button class="btn btn-primary update-btn">Update</button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7">No Category available</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+
+        <div class="position-fixed top-0 end-0 p-3" id="toastContainer">
+            <div id="updateToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000" style="z-index: 1000;">
+                <div style="background-color:green;color:black" class="toast-header">
+                    <strong class="me-auto">Success</strong>
+                    <small>Just now</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    Selected Category updated.
+                </div>
+            </div>
+        </div>
+        <div class="position-fixed top-0 end-0 p-3" id="toastContainer">
+            <div id="deleteToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000" style="z-index: 1000;">
+                <div style="background-color:green;color:black" class="toast-header">
+                    <strong class="me-auto">Success</strong>
+                    <small>Just now</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    Selected Category deleted successfully.
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    function submitForm() {
+        var form = document.getElementById('categoryForm');
+        var formData = new FormData(form);
+
+        // Send the form data to the controller action method using AJAX
+        $.ajax({
+            url: '/Pharmacy/SaveMedicineCategory', // Replace with your controller route
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                $('#successToast').toast('show');
+            },
+            error: function (error) {
+                // Handle error
+                console.log(error);
+            }
+        });
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        // Update button click event
+        $('#CategoryTableBody').on('click', '.update-btn', function () {
+            var row = $(this).closest('tr');
+            var CategoryID = row.find('td:eq(0)').text();
+            var CategoryName = document.getElementById("CategoryName_" + CategoryID).value;
+
+            var url = '/Pharmacy/UpdateMedicineCategory?' +
+                'CategoryID=' + CategoryID +
+                '&CategoryName=' + encodeURIComponent(CategoryName)  +
+                '&flag=' + encodeURIComponent('update');
+
+            $.ajax({
+                url: url,
+                method: 'POST',
+                success: function (response) {
+                    GetMedicineCategory();
+                    var successToast = new bootstrap.Toast(document.getElementById("updateToast"));
+                    successToast.show();
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    });
+
+
+</script>
+<script>
+    $(document).ready(function () {
+        // delete button click event
+        $('#CategoryTableBody').on('click', '.delete-btn', function () {
+            var row = $(this).closest('tr');
+            var CategoryName = row.find('td:eq(0)').text();
+
+            var url = '/Pharmacy/UpdateSupplierData?' +
+                'CategoryID=' + CategoryID +
+                '&CategoryName=' + encodeURIComponent(CategoryName) +
+                '&flag=' + encodeURIComponent('delete');
+
+            // Append more parameters if needed in the URL
+
+            $.ajax({
+                url: url,
+                method: 'POST',
+                success: function (response) {
+                    GetMedicineCategory();
+                    var successToast = new bootstrap.Toast(document.getElementById("deleteToast"));
+                    successToast.show();
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    });
+
+
+</script>
+
+<script>
+    function updateCategoryTable(supplierList) {
+        var tableBody = document.getElementById('CategoryTableBody');
+
+        if (supplierList && supplierList.length > 0) {
+            // Clear existing table rows
+            tableBody.innerHTML = '';
+
+            // Populate table with new data
+            supplierList.forEach(function (supplier) {
+                var row = document.createElement('tr');
+
+                // Create table cells and populate data with input elements
+                var CategoryIDCell = document.createElement('td');
+                CategoryIDCell.textContent = supplier.CategoryID;
+                row.appendChild(CategoryIDCell);
+
+                var supplierNameCell = document.createElement('td');
+                var supplierNameInput = document.createElement('input');
+                supplierNameInput.type = 'text';
+                supplierNameInput.value = supplier.CategoryName;
+                supplierNameInput.id = 'CategoryName_' + supplier.CategoryID; // Unique ID for SupplierName input
+                supplierNameInput.classList.add('form-control'); // Bootstrap form control class
+                supplierNameCell.appendChild(supplierNameInput);
+                row.appendChild(supplierNameCell);
+
+                var actionCell = document.createElement('td');
+
+                var updateBtn = document.createElement('button');
+                updateBtn.textContent = 'Update';
+                updateBtn.classList.add('btn', 'btn-primary', 'update-btn');
+                actionCell.appendChild(updateBtn);
+
+                var deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.classList.add('btn', 'btn-danger', 'delete-btn');
+                actionCell.appendChild(deleteBtn);
+
+                row.appendChild(actionCell);
+
+                tableBody.appendChild(row);
+            });
+        } else {
+            // Show message when no suppliers available
+            tableBody.innerHTML = '<tr><td colspan="7">Category data not available</td></tr>';
+        }
+    }
+
+</script>
+
+<script>
+    function GetMedicineCategory() {
+        var xhr = new XMLHttpRequest();
+
+        // Define the endpoint URL, assuming it's '/Patient/GetClinicalNotes'
+        var url = '/Pharmacy/GetMedicineCategory';
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    // Request successful, handle the response
+                    var clinicalNotes = JSON.parse(xhr.responseText);
+                    var mappedData = clinicalNotes.map(item => {
+                        return {
+                            CategoryID: item.categoryID,
+                            CategoryName: item.categoryName
+                        };
+                    });
+                    console.log(clinicalNotes);
+                    console.log(mappedData);
+                    updateCategoryTable(mappedData);
+                } else {
+                    // Request failed, handle errors
+                    console.error('Request failed with status:', xhr.status);
+                }
+            }
+        };
+
+        xhr.open('GET', url, true);
+        xhr.send();
+    }
+</script>
