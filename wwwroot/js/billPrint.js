@@ -1,7 +1,9 @@
 ﻿function printDivContent() {
     var contentToPrint = document.getElementById('contentToPrint').innerHTML;
     var printWindow = window.open('', '_blank');
-    printWindow.document.write('<html><head><title>Printed Content</title>');
+    var currentDate = new Date();
+    var formattedDate = currentDate.toLocaleString();
+    printWindow.document.write('<html><head><title>Medical Bill_' + formattedDate + '</title>');
     printWindow.document.write('<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">');
     printWindow.document.write('<style>');
     //printWindow.document.write('#patientTable { max-height: 300px; overflow-y: auto; }');

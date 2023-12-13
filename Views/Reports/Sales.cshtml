@@ -1,0 +1,43 @@
+﻿@model List<ClinicalPharmaSystem.Models.Reports.PurchaseSalesModel>
+
+<!-- Include Chart.js library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Add a canvas element for the chart -->
+<canvas id="salesChart" width="800" height="400"></canvas>
+
+<!-- Include Chart.js library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Add a canvas element for the chart -->
+<canvas id="salesChart" width="800" height="400"></canvas>
+
+<!-- JavaScript for generating the chart -->
+<script>
+    // Extract data from the Model to populate the chart
+    var saleDates = @Html.Raw(Json.Serialize(Model.Select(s => s.SaleDate.ToString("dd-MM-yyyy")).ToList()));
+    var saleAmounts = @Html.Raw(Json.Serialize(Model.Select(s => s.SaleAmount).ToList()));
+
+    // Get the canvas element
+    var ctx = document.getElementById('salesChart').getContext('2d');
+
+    // Create the chart
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: saleDates,
+            datasets: [{
+                label: 'Sale Amount over Sale Date',
+                data: saleAmounts,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>

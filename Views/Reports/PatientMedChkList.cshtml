@@ -1,0 +1,66 @@
+﻿@model List<ClinicalPharmaSystem.Models.Reports.PatientPurchaseModel>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Expiring Medicines</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', { 'packages': ['table'] });
+        google.charts.setOnLoadCallback(drawTable);
+
+        function drawTable() {
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Patient Name');
+            data.addColumn('string', 'Mobile No');
+            data.addColumn('string', 'Medicine Name');
+            data.addColumn('number', 'Purchased Quantity');
+
+            var patientMedicines = @Html.Raw(Json.Serialize(Model));
+
+            patientMedicines.forEach(function (medicine) {
+                data.addRow([
+                    medicine.patientName || 'N/A',
+                    medicine.mobileNo || 'N/A',
+                    medicine.medicineName,
+                    medicine.purchasedQuantity
+                ]);
+            });
+
+            var table = new google.visualization.Table(document.getElementById('table_div'));
+            table.draw(data, { showRowNumber: true, width: '100%', height: '100%' });
+        }
+    </script>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+    <style>
+        /* Add your styles here */
+        .position-relative {
+            position: relative;
+        }
+
+        .position-absolute-top-right {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+    </style>
+
+    <title>Medicines Reminder</title>
+</head>
+<body>
+    <div class="container">
+        <h3>Patients bought Medicine List before 30 days</h3>
+        <div class="position-relative">
+            <button class="btn btn-primary position-absolute-top-right">
+                <i class="fas fa-bell"></i> Send Reminder
+            </button>            
+        </div>
+        <div style="margin-top: 60px;" id="table_div"></div>
+    </div>
+</body>
+</html>

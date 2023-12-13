@@ -12,6 +12,7 @@ using ClinicalPharmaSystem.Models.PatientView;
 using System.Data.Common;
 using System.Globalization;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Web.WebPages;
 
 namespace ClinicalPharmaSystem.DataContext
 {
@@ -62,32 +63,29 @@ namespace ClinicalPharmaSystem.DataContext
 
                 string query = "SELECT PatientId, PatientName, MobileNo, Address, Sex, Age " +
                                "FROM PatientData " +
-                               "WHERE PatientId = @PatientId ";
-                if(datepickerFrom == null)
-                {
-                    var dates = ParseDateRange(datepickerTo);
-                    datepickerFrom = dates.Item1;
-                    datepickerTo = dates.Item2;
-                }
-
-                if (datepickerTo != null)
-                {
-                    query += "AND CONVERT(VARCHAR, CreatedDate, 105) BETWEEN @datepickerFrom AND @datepickerTo";
+                               "WHERE ";
+                
+                    query += "PatientId = @PatientId ";
                     patients = dbConnection.Query<PatientInfo>(
                         query,
-                        new { PatientId = patientId, datepickerFrom = datepickerFrom, datepickerTo = datepickerTo }
-                    ).ToList();
-                }
-                else
-                {
-                    query += "AND CONVERT(VARCHAR, CreatedDate, 105) = @datepickerFrom";
-                    patients = dbConnection.Query<PatientInfo>(
-                        query,
-                        new { PatientId = patientId, datepickerFrom = datepickerFrom }
-                    ).ToList();
-                }
+                        new { PatientId = patientId }
+                    ).ToList();                
             }
             return patients;
+        }
+
+        static string ConvertToSQLDateFormat(string inputDate)
+        {
+            string sqlFormattedDate = string.Empty;
+            if (inputDate != null)
+            {
+                // Parse the input date in 'dd-MM-yyyy' format to DateTime
+                DateTime parsedDate = DateTime.ParseExact(inputDate, "dd-MM-yyyy", null);
+
+                // Convert DateTime to 'yyyy-MM-dd' format
+                sqlFormattedDate = parsedDate.ToString("yyyy-MM-dd");
+            }
+            return sqlFormattedDate;
         }
 
         public List<Models.PatientView.PatientHealthData> GetHealthData(string patientId, string datepickerFrom, string datepickerTo)
@@ -101,29 +99,33 @@ namespace ClinicalPharmaSystem.DataContext
                 string query = "SELECT Date, BloodPressure, PulseRate, Weight, SpO2, CONVERT(VARCHAR(10), CreatedDate, 103) AS CreatedDate " +
                                "FROM PatientHealthData " +
                                "WHERE PatientId = @PatientId ";
+
+
                 if (datepickerFrom == null)
                 {
                     var dates = ParseDateRange(datepickerTo);
                     datepickerFrom = dates.Item1;
                     datepickerTo = dates.Item2;
                 }
+                string sqlStartDate = ConvertToSQLDateFormat(datepickerFrom);
+                string sqlEndDate = ConvertToSQLDateFormat(datepickerTo);
                 if (datepickerTo != null)
                 {
-                    query += "AND CONVERT(VARCHAR, CreatedDate, 105) BETWEEN @datepickerFrom AND @datepickerTo " +
+                    query += "AND CONVERT(datetime, CONVERT(VARCHAR, Date, 23), 102) BETWEEN @datepickerFrom AND @datepickerTo " +
                              "ORDER BY indexid DESC";
 
                     patients = dbConnection.Query<Models.PatientView.PatientHealthData>(
                         query,
-                        new { PatientId = patientId, datepickerFrom = datepickerFrom, datepickerTo = datepickerTo }).ToList();
+                        new { PatientId = patientId, datepickerFrom = sqlStartDate, datepickerTo = sqlEndDate }).ToList();
                 }
                 else
                 {
-                    query += "AND CONVERT(VARCHAR, CreatedDate, 105) = @datepickerFrom " +
+                    query += "AND CONVERT(datetime, CONVERT(VARCHAR, Date, 23), 102) = @datepickerFrom " +
                              "ORDER BY indexid DESC";
 
                     patients = dbConnection.Query<Models.PatientView.PatientHealthData>(
                         query,
-                        new { PatientId = patientId, datepickerFrom = datepickerFrom }
+                        new { PatientId = patientId, datepickerFrom = sqlStartDate }
                     ).ToList();
                 }
             }
@@ -157,18 +159,20 @@ namespace ClinicalPharmaSystem.DataContext
                     datepickerFrom = dates.Item1;
                     datepickerTo = dates.Item2;
                 }
+                string sqlStartDate = ConvertToSQLDateFormat(datepickerFrom);
+                string sqlEndDate = ConvertToSQLDateFormat(datepickerTo);
                 if (datepickerTo != null)
                 {
-                    query += "AND CONVERT(VARCHAR, PatientTestValues.CreatedDate, 105) BETWEEN @datepickerFrom AND @datepickerTo";
+                    query += "AND CONVERT(datetime, CONVERT(VARCHAR, PatientTestValues.CreatedDate, 23), 102) BETWEEN @datepickerFrom AND @datepickerTo";
                 }
                 else
                 {
-                    query += "AND CONVERT(VARCHAR, PatientTestValues.CreatedDate, 105) = @datepickerFrom";
+                    query += "AND CONVERT(datetime, CONVERT(VARCHAR, PatientTestValues.CreatedDate, 23), 102) = @datepickerFrom";
                 }
 
                 patients = dbConnection.Query<PatientDiseaseMetrics>(
                     query,
-                    new { PatientId = patientId, datepickerFrom =datepickerFrom, datepickerTo = datepickerTo }
+                    new { PatientId = patientId, datepickerFrom = sqlStartDate, datepickerTo = sqlEndDate }
                 ).ToList();
             }
 
@@ -192,18 +196,20 @@ namespace ClinicalPharmaSystem.DataContext
                     var dates = ParseDateRange(datepickerTo);
                     datepickerFrom = dates.Item1;
                     datepickerTo = dates.Item2;
-                    query += "AND CONVERT(VARCHAR, VisitDate, 105) BETWEEN @datepickerFrom AND @datepickerTo";
+                    query += "AND CONVERT(datetime, CONVERT(VARCHAR, VisitDate, 23), 102) BETWEEN @datepickerFrom AND @datepickerTo";
                 }
                 else
                 {
-                    query += "AND CONVERT(VARCHAR, VisitDate, 105) = @datepickerFrom";
+                    query += "AND CONVERT(datetime, CONVERT(VARCHAR, VisitDate, 23), 102) = @datepickerFrom";
                 }
+                string sqlStartDate = ConvertToSQLDateFormat(datepickerFrom);
+                string sqlEndDate = ConvertToSQLDateFormat(datepickerTo);
 
                 query += " ORDER BY ClinicalNotesId DESC";
 
                 patients = dbConnection.Query<PatientClinicalNotes>(
                     query,
-                    new { PatientId = patientId, datepickerFrom = datepickerFrom, datepickerTo = datepickerTo }
+                    new { PatientId = patientId, datepickerFrom = sqlStartDate, datepickerTo = sqlEndDate }
                 ).ToList();
             }
 
@@ -227,18 +233,19 @@ namespace ClinicalPharmaSystem.DataContext
                     var dates = ParseDateRange(datepickerTo);
                     datepickerFrom = dates.Item1;
                     datepickerTo = dates.Item2;
-                    query += "AND CONVERT(VARCHAR, VisitDate, 105) BETWEEN @datepickerFrom AND @datepickerTo";
+                    query += "AND CONVERT(datetime, CONVERT(VARCHAR, VisitDate, 23), 102) BETWEEN @datepickerFrom AND @datepickerTo";
                 }
                 else
                 {
-                    query += "AND CONVERT(VARCHAR, VisitDate, 105) = @datepickerFrom";
+                    query += "AND CONVERT(datetime, CONVERT(VARCHAR, VisitDate, 23), 102) = @datepickerFrom";
                 }
-
+                string sqlStartDate = ConvertToSQLDateFormat(datepickerFrom);
+                string sqlEndDate = ConvertToSQLDateFormat(datepickerTo);
                 query += " ORDER BY MedicalHistoryId DESC";
 
                 patients = dbConnection.Query<PatientMedicalHistory>(
                     query,
-                    new { PatientId = patientId, datepickerFrom = datepickerFrom, datepickerTo = datepickerTo}
+                    new { PatientId = patientId, datepickerFrom = sqlStartDate, datepickerTo = sqlEndDate }
                 ).ToList();
             }
 
@@ -261,18 +268,19 @@ namespace ClinicalPharmaSystem.DataContext
                     var dates = ParseDateRange(datepickerTo);
                     datepickerFrom = dates.Item1;
                     datepickerTo = dates.Item2;
-                    query += "AND CONVERT(VARCHAR, CreatedDate, 105) BETWEEN @datepickerFrom AND @datepickerTo";
+                    query += "AND CONVERT(datetime, CONVERT(VARCHAR, CreatedDate, 23), 102) BETWEEN @datepickerFrom AND @datepickerTo";
                 }
                 else
                 {
-                    query += "AND CONVERT(VARCHAR, CreatedDate, 105) = @datepickerFrom";
+                    query += "AND CONVERT(datetime, CONVERT(VARCHAR, CreatedDate, 23), 102) = @datepickerFrom";
                 }
-
+                string sqlStartDate = ConvertToSQLDateFormat(datepickerFrom);
+                string sqlEndDate = ConvertToSQLDateFormat(datepickerTo);
                 query += " ORDER BY SerialNumber DESC";
 
                 patients = dbConnection.Query<PatientPrescription>(
                     query,
-                    new { PatientId = patientId, datepickerFrom = datepickerFrom, datepickerTo = datepickerTo}
+                    new { PatientId = patientId, datepickerFrom = sqlStartDate, datepickerTo = sqlEndDate }
                 ).ToList();
             }
 

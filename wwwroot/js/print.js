@@ -4,7 +4,9 @@
     var printWindow = window.open('', '_blank');
     var doctorName = document.getElementById('doctorName').innerHTML;
     var doctorRegNo = document.getElementById('doctorRegNo').value;
-    printWindow.document.write('<html><head><title>Printed Content</title>');
+    var currentDate = new Date();
+    var formattedDate = currentDate.toLocaleString(); 
+    printWindow.document.write('<html><head><title>Doctor Prescription_' + formattedDate +'</title>');
     printWindow.document.write('<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">');
     printWindow.document.write('<style>');
     printWindow.document.write('#patientTable { max-height: 300px; overflow-y: auto; }');

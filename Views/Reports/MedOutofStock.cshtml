@@ -1,0 +1,51 @@
+﻿@model List<ClinicalPharmaSystem.Models.Reports.ExpiringMedicineModel>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Medicine Stock Visualization</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', { packages: ['corechart', 'bar'] });
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+            var jsonData = @Html.Raw(Json.Serialize(Model));
+            var data = new google.visualization.DataTable();
+
+            // Define columns in the DataTable
+            data.addColumn('string', 'Medicine Name');
+            data.addColumn('number', 'Quantity');
+            data.addColumn({ type: 'string', role: 'style' }); // To style out of stock items
+
+            // Add rows to the DataTable
+            jsonData.forEach(function (item) {
+                var quantity = item.numberOfTablets;
+                var style = quantity < 50 ? 'color: red;' : ''; // Apply red color to out of stock items
+                var status = quantity < 50 ? 'Out of Stock' : ''; // Label out of stock items
+
+                data.addRow([item.medicineName, quantity, style]);
+            });
+
+            var options = {
+                title: 'Medicine Stock Quantity - Less than 200 list',
+                legend: { position: 'none' },
+                axes: {
+                    y: {
+                        Quantity: { label: 'Quantity' }
+                    }
+                },
+                bars: 'vertical'
+            };
+
+            var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+            chart.draw(data, options);
+        }
+    </script>
+    
+
+</head>
+<body>
+    <div id="chart_div" style="width: 900px; height: 500px;"></div>
+</body>
+</html>

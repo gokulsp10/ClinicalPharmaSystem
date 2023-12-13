@@ -38,6 +38,8 @@ builder.Services.AddTransient<PharmacyRepository>(serviceProvider =>
     return new PharmacyRepository(connectionString, httpContextAccessor);
 });
 
+builder.Services.AddTransient<ReportsRepository>(_ => new ReportsRepository(connectionString));
+
 builder.Services.AddTransient<MenuViewComponent>();
 
 // Add HttpContextAccessor

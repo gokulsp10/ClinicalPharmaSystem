@@ -1,0 +1,52 @@
+﻿@model List<ClinicalPharmaSystem.Models.Reports.ExpiringMedicineModel>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Expiring Medicine Chart</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+</head>
+<body>
+    <div id="chart_div" style="width: 900px; height: 500px;"></div>
+    <script>
+        google.charts.load('current', { 'packages': ['corechart'] });
+        google.charts.setOnLoadCallback(drawChart);
+
+        function formatDate(dateString) {
+            var date = new Date(dateString);
+            var day = date.getDate().toString().padStart(2, '0');
+            var month = (date.getMonth() + 1).toString().padStart(2, '0');
+            var year = date.getFullYear();
+            return `${day}-${month}-${year}`;
+        }
+
+        function drawChart() {
+            var medicineData = @Html.Raw(Json.Serialize(Model));
+
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Medicine Name');
+            data.addColumn('number', 'Quantity');
+            data.addColumn({ type: 'string', role: 'tooltip' });
+
+            var chartData = [];
+            medicineData.forEach(function (medicine) {
+                var expiryDateFormatted = formatDate(medicine.expiryDate);
+                var tooltip = `Medicine Name: ${medicine.medicineName}\nQuantity: ${medicine.numberOfTablets}\nExpiry Date: ${expiryDateFormatted}`;
+                chartData.push([medicine.medicineName, medicine.numberOfTablets, tooltip]);
+            });
+
+            data.addRows(chartData);
+
+            var options = {
+                title: 'Expiring Medicines',
+                legend: 'none'
+            };
+
+            var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+            chart.draw(data, options);
+        }
+    </script>
+
+
+</body>
+</html>
